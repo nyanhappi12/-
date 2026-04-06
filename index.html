@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NyanHappi12 — Strona oficjalna (2026)</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:rgba(255,255,255,0.85);
+      --muted:#9aa4b2;
+      --accent-1: #ff6fb5;
+      --accent-2: #7c4dff;
+      --glass: rgba(255,255,255,0.06);
+    }
+    [data-theme="light"]{
+      --bg:#f6f9fc;
+      --card:#ffffff;
+      --muted:#55606a;
+      --glass: rgba(0,0,0,0.04);
+    }
+
+    html,body{height:100%}
+    body{
+      margin:0;font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background: linear-gradient(180deg,#0b1220 0%, #071025 100%); color: #fff;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    [data-theme="light"] body{
+      background: linear-gradient(180deg,#f8fafc 0%, #ffffff 100%);
+      color:#0b1220;
+    }
+
+    /* Topbar */
+    .topbar{
+      position:fixed; left:20px; right:20px; top:16px; z-index:40;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+    }
+    .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit}
+    .brand img{width:56px;height:56px;border-radius:999px;object-fit:cover; border:2px solid rgba(255,255,255,0.06)}
+    .brand .title{font-weight:700; font-size:20px; letter-spacing:0.4px}
+    .brand .title .logo-small{font-family:"Luckiest Guy"; font-size:22px; display:inline-block; margin-left:4px}
+
+    /* menu button */
+    /* domyślnie – CIEMNY MOTYW */
+.menu-btn{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,0.08);
+  cursor:pointer;
+
+  color:#ffffff; /* <<< BIAŁY hamburger w CIEMNYM */
+}
+
+/* JASNY MOTYW */
+[data-theme="light"] .menu-btn{
+  background:rgba(0,0,0,0.06);
+  border:1px solid rgba(0,0,0,0.08);
+
+  color:#0b1220; /* <<< CIEMNY hamburger w JASNYM */
+}
+
+    /* menu drawer */
+    .drawer-wrap{position:fixed; inset:0; z-index:50; pointer-events:none}
+    .drawer-backdrop{position:absolute; inset:0; background:rgba(2,6,23,0.45); opacity:0; transition:opacity .35s; pointer-events:none}
+    .drawer{position:fixed; left:0; top:0; height:100%; width:320px; max-width:85%; padding:22px;
+      transform:translateX(-110%); transition:transform 600ms cubic-bezier(.2,.9,.2,1);
+      backdrop-filter: blur(8px); border-right:1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      pointer-events:auto;
+    }
+    [data-theme="light"] .drawer{ background: linear-gradient(180deg, rgba(10,20,30,0.03), rgba(255,255,255,0.6)); }
+
+    /* when open */
+    .drawer-wrap.open .drawer{ transform:translateX(0); transition-duration:5000ms; } /* 5s open animation per request */
+    .drawer-wrap.open .drawer-backdrop{ opacity:1; pointer-events:auto }
+
+    .drawer .close{position:absolute; right:12px; top:12px; width:36px;height:36px;border-radius:999px; display:grid;place-items:center; cursor:pointer}
+    .drawer nav a{display:flex; gap:10px; align-items:center; padding:10px;border-radius:8px; color:inherit; text-decoration:none; margin-bottom:6px}
+    .drawer nav a:hover{background:rgba(255,255,255,0.03)}
+
+    /* hero */
+    .hero {min-height:55vh; display:flex; align-items:center; justify-content:center; padding:72px 20px 40px 20px; background-size:cover; background-position:center}
+    .hero .card{max-width:980px; width:100%; padding:36px; border-radius:18px; background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); text-align:center; backdrop-filter: blur(6px)}
+    [data-theme="light"] .hero .card{ background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.85)); }
+
+    .hero h1{font-family:"Luckiest Guy"; font-size:44px; margin:0 0 8px; letter-spacing:1px}
+    .hero p{margin:0; opacity:0.95; font-size:18px}
+
+    /* content area */
+    .content{ max-width:1100px; margin:-36px auto 80px; background:var(--card); border-radius:20px; padding:28px; box-shadow: 0 12px 40px rgba(2,6,23,0.6); color:inherit }
+    [data-theme="light"] .content{ color:inherit; }
+
+    .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+    .video-card{border-radius:12px; overflow:hidden; background:rgba(0,0,0,0.06); color:inherit; text-decoration:none;}
+    .video-card img{width:100%; height:160px; object-fit:cover; display:block}
+    .video-card .meta{padding:10px;font-size:14px}
+
+    .cta{display:inline-block;padding:12px 18px;border-radius:999px;font-weight:600;text-decoration:none}
+    .cta.gradient{ background: linear-gradient(90deg,var(--accent-1),var(--accent-2)); color:white }
+
+    /* sticky countdown */
+    .countdown{ position:fixed; right:18px; bottom:18px; z-index:60; width:220px; border-radius:14px; padding:12px;
+       background:rgba(255,255,255,0.07); backdrop-filter: blur(6px); border:1px solid rgba(255,255,255,0.06); text-align:center}
+    [data-theme="light"] .countdown{ background:rgba(0,0,0,0.04) }
+
+    .countdown .time{font-family:monospace; font-size:20px; margin-top:6px; transition:all .28s ease; }
+
+    /* footer */
+    footer{ text-align:center; color:var(--muted); padding:30px 12px; font-size:13px }
+
+    /* small responsive */
+    @media (max-width:900px){
+      .grid-3{ grid-template-columns:1fr; }
+      .brand .title{ display:none }
+    }
+    .material-symbols-rounded{
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+  font-size:22px;
+  line-height:1;
+}
+.drawer nav a{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a id="home-link" class="brand" href="/index.html" title="NyanHappi12 — Strona główna">
+      <img id="logo-img" src="https://nyanhappi12.neocities.org/site_files/Copilot_20251213_004258_11zon (1).png" alt="logo">
+      <div>
+        <div class="title">NyanHappi12 <span class="logo-small">☆</span></div>
+        <div style="font-size:11px; color:var(--muted); margin-top:4px">Oficjalna strona 2026</div>
+      </div>
+    </a>
+
+    <div style="display:flex; gap:10px; align-items:center">
+      <button id="menu-open" class="menu-btn" aria-label="Otwórz menu" title="Menu">
+        <!-- three lines icon -->
+        <svg width="18" height="14" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- DRAWER -->
+  <div id="drawerWrap" class="drawer-wrap" aria-hidden="true">
+    <div id="drawerBackdrop" class="drawer-backdrop"></div>
+    <aside class="drawer" role="dialog" aria-modal="true" aria-label="Nawigacja">
+      <button id="drawerClose" class="close" aria-label="Zamknij"><strong>✕</strong></button>
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px">
+        <img id="drawer-logo" src="https://nyanhappi12.neocities.org/site_files/Copilot_20251213_004258_11zon (1).png" style="width:56px;height:56px;border-radius:999px;object-fit:cover">
+        <div>
+          <div style="font-weight:700">NyanHappi12</div>
+          <div style="font-size:12px;color:var(--muted)">Witaj! wybierz stronę</div>
+        </div>
+      </div>
+
+      <nav>
+  <a href="/filmy/">
+    <span class="material-symbols-rounded">smart_display</span>
+    Najnowsze Filmy
+  </a>
+
+  <a href="/galeria/">
+    <span class="material-symbols-rounded">photo_library</span>
+    Galeria Obrazów
+  </a>
+
+  <a href="/wydarzenia/">
+    <span class="material-symbols-rounded">schedule</span>
+    Odliczanie Do Wydarzeń
+  </a>
+
+  <a href="/posty/">
+    <span class="material-symbols-rounded">article</span>
+    Posty
+  </a>
+
+  <a id="account-link" href="/login/">
+    <span class="material-symbols-rounded">account_circle</span>
+    Konto
+  </a>
+
+  <a href="/informacje-kontaktowe/">
+    <span class="material-symbols-rounded">contact_mail</span>
+    Informacje & Kontakt
+  </a>
+</nav>
+
+      <div style="margin-top:18px; font-size:13px; color:var(--muted)">Motyw:</div>
+      <div style="display:flex; gap:8px; margin-top:8px">
+        <button id="theme-light" class="cta" style="padding:8px 10px">Jasny</button>
+        <button id="theme-dark" class="cta" style="padding:8px 10px; background:linear-gradient(90deg,var(--accent-1),var(--accent-2)); color:#fff">Ciemny</button>
+      </div>
+
+      <div style="margin-top:14px; font-size:12px; color:var(--muted)">Motyw zapisany lokalnie; jeśli jesteś zalogowany, motyw zostanie zapisany do Twojego konta (Firestore).</div>
+    </aside>
+  </div>
+
+  <!-- HERO -->
+  <main>
+    <section id="hero" class="hero" style="background-image:url('https://via.placeholder.com/1600x700')">
+      <div class="card">
+        <h1>Witajcie na mojej stronie internetowej</h1>
+        <p>Ja jestem <span style="font-family:'Luckiest Guy'">NyanHappi12</span> i to jest moja najnowsza strona internetowa z 2026 roku.</p>
+      </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <section class="content">
+      <h2 style="margin:0 0 12px">Moje najnowsze odcinki</h2>
+
+      <div id="videos" class="grid-3" aria-live="polite">
+        <!-- top-3 videos will be injected here -->
+        <div class="video-card"><div style="height:160px;background:#e6eef7"></div><div class="meta">Ładowanie...</div></div>
+        <div class="video-card"><div style="height:160px;background:#e6eef7"></div><div class="meta">Ładowanie...</div></div>
+        <div class="video-card"><div style="height:160px;background:#e6eef7"></div><div class="meta">Ładowanie...</div></div>
+      </div>
+
+      <div style="margin-top:16px">
+        <a href="/filmy/" class="cta gradient">Zobacz wszystkie</a>
+      </div>
+
+      <hr style="margin:22px 0; border:none; height:1px; background:linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)">
+
+      <h3>Galeria</h3>
+      <p>Tutaj możecie zobaczyć wszystkie obrazy z galerii zdjęć.</p>
+      <div style="margin-top:12px"><a href="/galeria/" class="cta gradient">Zobacz galerię zdjęć</a></div>
+
+      <hr style="margin:22px 0; border:none; height:1px; background:linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)">
+
+      <h3>Kontakt</h3>
+      <p>Potrzebujesz kontaktu lub chcesz dowiedzieć się o informacjach strony?</p>
+      <div style="margin-top:12px"><a href="/informacje-kontaktowe/" class="cta" style="background:linear-gradient(90deg,#f5a623,#ff6b6b); color:#fff">Informacje o stronie</a></div>
+    </section>
+
+    <footer>
+      <div>© 2026 NyanHappi12 — wszelkie prawa zastrzeżone. Prosimy nie kopiować i nie próbować wyciągać kodu z źródła strony. Dziękuję — NyanHappi12</div>
+      <div style="margin-top:6px; font-size:12px">Motyw: <span id="footer-theme">ciemny</span></div>
+    </footer>
+  </main>
+
+  <!-- STICKY COUNTDOWN bottom-right -->
+  <div id="countdown" class="countdown" role="status" aria-live="polite">
+    <div style="font-size:12px; font-weight:600">Do następnego odcinka zostało:</div>
+    <div id="countdown-value" class="time">--:--:--</div>
+  </div>
+
+  <!-- SCRIPTS - Firebase + App logic -->
+  <!-- Firebase SDK (module style) - uses the config you provided earlier -->
+  <script type="module">
+    // ----------------------- CONFIG (EDYTUJ TUTAJ) -----------------------
+    const CONFIG = {
+      CLOUDINARY: {
+        cloudName: '226846279479333',      // provided
+        unsignedPreset: 'NyanHappi'        // provided
+      },
+      FIREBASE: {
+        apiKey: "AIzaSyA6B1a0I1m7hXPwblW8diKsW1nnDVmGEP0",
+        authDomain: "nyanhappi12.firebaseapp.com",
+        projectId: "nyanhappi12",
+        storageBucket: "nyanhappi12.firebasestorage.app",
+        messagingSenderId: "197042141276",
+        appId: "1:197042141276:web:d9f1c73f569f9180a40e99",
+        measurementId: "G-RW1PDZR1X5"
+      },
+      YOUTUBE: {
+        API_KEY: "REPLACE_WITH_YOUR_YOUTUBE_API_KEY", // <-- WSTAW TU SWÓJ YouTube Data API v3 KEY
+        HANDLE: "@nyanhappi12cute"
+      }
+    };
+    // ---------------------------------------------------------------------
+
+    // -------- Firebase imports (modular) ----------
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    // init firebase
+    const firebaseApp = initializeApp(CONFIG.FIREBASE);
+    try { getAnalytics(firebaseApp); } catch(e) { /* analytics optional */ }
+    const auth = getAuth(firebaseApp);
+    const db = getFirestore(firebaseApp);
+
+    // DOM references
+    const drawerWrap = document.getElementById('drawerWrap');
+    const menuOpen = document.getElementById('menu-open');
+    const drawerClose = document.getElementById('drawerClose');
+    const drawerBackdrop = document.getElementById('drawerBackdrop')
+    const accountLink = document.getElementById('account-link');
+    const logoImg = document.getElementById('logo-img');
+    const drawerLogo = document.getElementById('drawer-logo');
+    const hero = document.getElementById('hero');
+    const videosContainer = document.getElementById('videos');
+    const footerTheme = document.getElementById('footer-theme');
+    const themeLightBtn = document.getElementById('theme-light');
+    const themeDarkBtn = document.getElementById('theme-dark');
+
+    // load logos/placeholders (you will replace later)
+    const defaultLogo = 'https://nyanhappi12.neocities.org/site_files/Copilot_20251213_004258_11zon (1).png';
+    const defaultHero = 'https://nyanhappi12.neocities.org/site_files/Copilot_20251213_004258_11zon (1).png';
+    logoImg.src = defaultLogo;
+    drawerLogo.src = defaultLogo;
+    hero.style.backgroundImage = `url('${defaultHero}')`;
+
+    // Theme (localStorage + if logged in, optionally store to Firestore)
+    const THEME_KEY = 'nh_theme';
+    function applyTheme(theme){
+      document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
+      footerTheme.textContent = theme === 'light' ? 'jasny' : 'ciemny';
+      localStorage.setItem(THEME_KEY, theme);
+      // if logged in: (optionally) write to Firestore (we'll do this after login)
+    }
+    // init theme
+    const saved = localStorage.getItem(THEME_KEY) || 'dark';
+    applyTheme(saved);
+    themeLightBtn.onclick = ()=>applyTheme('light');
+    themeDarkBtn.onclick = ()=>applyTheme('dark');
+
+    // Drawer open/close with 5s smooth show when open (CSS handles transition-duration)
+    function openDrawer(){
+      drawerWrap.classList.add('open');
+      drawerWrap.setAttribute('aria-hidden','false');
+    }
+    function closeDrawer(){
+      drawerWrap.classList.remove('open');
+      drawerWrap.setAttribute('aria-hidden','true');
+    }
+    menuOpen.addEventListener('click', openDrawer);
+    drawerClose.addEventListener('click', closeDrawer);
+    drawerBackdrop.addEventListener('click', closeDrawer);
+
+    // ----- Auth handlers -----
+    let accountDoc = null;
+    onAuthStateChanged(auth, async (user)=>{
+      if(user){
+        // fetch/create accounts/{uid}
+        const docRef = doc(db, 'accounts', user.uid);
+        try{
+          const snap = await getDoc(docRef);
+          if(!snap.exists()){
+            // create basic account
+            await setDoc(docRef, {
+              display_name: user.displayName || user.email || 'Użytkownik',
+              createdAt: new Date().toISOString()
+            });
+            accountDoc = { display_name: user.displayName || user.email || 'Użytkownik', id: user.uid };
+          } else {
+            accountDoc = { id: snap.id, ...snap.data() };
+          }
+          // update UI
+          accountLink.href = `/konto/${accountDoc.id}`;
+          // add session_id to URL as requested
+          const u = new URL(window.location.href);
+          u.searchParams.set('session_id', accountDoc.id);
+          window.history.replaceState({}, '', u.toString());
+        }catch(e){ console.error(e) }
+      } else {
+        accountDoc = null;
+        accountLink.href = '/login/';
+        // remove session_id
+        const u = new URL(window.location.href);
+        u.searchParams.delete('session_id');
+        window.history.replaceState({}, '', u.toString());
+      }
+    });
+
+    // login/logout
+    accountLink.addEventListener('click', async ()=>{
+      const user = auth.currentUser;
+      if(user){
+        // go to profile
+        if(accountDoc && accountDoc.id) window.location.href = `/konto/${accountDoc.id}`;
+        else alert('Trwa ładowanie konta...');
+      } else {
+        // show login
+        const provider = new GoogleAuthProvider();
+        try{
+          await signInWithPopup(auth, provider);
+        }catch(e){ alert('Błąd logowania: '+e.message) }
+      }
+    });
+
+    // Quick signout (for debugging) - long press account button (optional)
+    accountLink.addEventListener('contextmenu', async (ev)=>{
+      ev.preventDefault();
+      if(confirm('Wylogować?')) { await signOut(auth); alert('Wylogowano') }
+    });
+
+    // ---------------- Cloudinary unsigned upload helper ----------------
+    async function uploadToCloudinary(file){
+      const url = `https://api.cloudinary.com/v1_1/${CONFIG.CLOUDINARY.cloudName}/upload`;
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', CONFIG.CLOUDINARY.unsignedPreset);
+      const resp = await fetch(url, { method:'POST', body:fd });
+      if(!resp.ok) throw new Error('Upload failed');
+      return resp.json();
+    }
+    // Note: no upload UI on index.html yet — can add later.
+
+    // ---------- YouTube: robust loader (zamień stary blok tym) ----------
+(() => {
+  // Preferuj klucz z CONFIG, fall back do lokalnie wstawionego YT_KEY
+  const API_KEY = (window.CONFIG && CONFIG.YOUTUBE && CONFIG.YOUTUBE.API_KEY) || "AIzaSyCrdS7Sou5-VsrHTZAgsPA3SSCJP8qHrQk";
+  // handle może być w CONFIG z @ lub bez — normalizujemy
+  const RAW_HANDLE = (window.CONFIG && CONFIG.YOUTUBE && CONFIG.YOUTUBE.HANDLE) || 'nyanhappi12_cute';
+  const HANDLE = RAW_HANDLE.startsWith('@') ? RAW_HANDLE : '@' + RAW_HANDLE;
+  const MAX_RESULTS = 3;
+
+  const container = document.getElementById('videos');
+
+  function showMsg(html){
+    if(!container) return;
+    container.innerHTML = `<div style="grid-column:1/-1;padding:12px;color:var(--muted)">${html}</div>`;
+  }
+
+  async function safeFetchJson(url){
+    try{
+      const resp = await fetch(url);
+      const json = await resp.json().catch(()=>null);
+      return { ok: resp.ok, status: resp.status, json };
+    }catch(e){
+      return { ok:false, status:0, json:null, error:e };
+    }
+  }
+
+  function escapeHtml(s){ return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
+
+  async function resolveChannelId(handle){
+    if(!API_KEY || API_KEY.startsWith('REPLACE')){
+      console.warn('YT: API key missing or placeholder');
+      return null;
+    }
+    const plain = handle.replace(/^@/,'');
+    // 1) try channels.forHandle
+    try{
+      const url = `https://www.googleapis.com/youtube/v3/channels?part=id&id&forHandle=${encodeURIComponent(plain)}&key=${API_KEY}`;
+      // (note: some projects prefer part=id;forHandle)
+      const r = await safeFetchJson(url);
+      console.log('YT channels.forHandle ->', r.status, r.json);
+      if(r.json && r.json.error){
+        console.warn('YT channels.forHandle error:', r.json.error);
+      }
+      if(r.json && Array.isArray(r.json.items) && r.json.items.length){
+        return r.json.items[0].id;
+      }
+    }catch(e){ console.warn('YT forHandle failed', e); }
+
+    // 2) fallback: search.list for channels
+    try{
+      const sUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&q=${encodeURIComponent(plain)}&key=${API_KEY}`;
+      const r2 = await safeFetchJson(sUrl);
+      console.log('YT search.list fallback ->', r2.status, r2.json);
+      if(r2.json && r2.json.error){
+        console.warn('YT search fallback error:', r2.json.error);
+      }
+      if(r2.json && Array.isArray(r2.json.items) && r2.json.items.length){
+        // channelId may be in snippet.channelId or in id.channelId
+        const maybe = r2.json.items[0].snippet?.channelId || r2.json.items[0].id?.channelId;
+        return maybe || null;
+      }
+    }catch(e){ console.warn('YT search fallback failed', e); }
+
+    return null;
+  }
+
+  // get uploads playlistId via channels.list?part=contentDetails&id=channelId
+  async function getUploadsPlaylistId(channelId){
+    try{
+      const url = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${encodeURIComponent(channelId)}&key=${API_KEY}`;
+      const r = await safeFetchJson(url);
+      console.log('YT channels.contentDetails ->', r.status, r.json);
+      if(r.json && r.json.error){
+        console.error('YT contentDetails error', r.json.error);
+        return null;
+      }
+      if(r.json && Array.isArray(r.json.items) && r.json.items.length){
+        return r.json.items[0].contentDetails?.relatedPlaylists?.uploads || null;
+      }
+    }catch(e){ console.warn('YT getUploadsPlaylistId failed', e); }
+    return null;
+  }
+
+  // fetch playlist items (latest uploads)
+  async function fetchLatestFromPlaylist(playlistId, maxResults = MAX_RESULTS){
+    if(!playlistId) return [];
+    try{
+      const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${encodeURIComponent(playlistId)}&maxResults=${maxResults}&key=${API_KEY}`;
+      const r = await safeFetchJson(url);
+      console.log('YT playlistItems ->', r.status, r.json);
+      if(r.json && r.json.error){
+        console.error('YT playlistItems error', r.json.error);
+        return [];
+      }
+      if(!r.json || !Array.isArray(r.json.items)) return [];
+      const out = r.json.items
+        .filter(it => it.snippet && it.snippet.resourceId && it.snippet.resourceId.videoId)
+        .map(it => {
+          const vid = it.snippet.resourceId.videoId;
+          const thumb = it.snippet?.thumbnails?.high?.url || it.snippet?.thumbnails?.medium?.url || it.snippet?.thumbnails?.default?.url || '';
+          const title = it.snippet?.title || 'Brak tytułu';
+          return { id: vid, title, thumb };
+        });
+      return out;
+    }catch(e){ console.error('YT fetchLatestFromPlaylist failed', e); return []; }
+  }
+
+  // orchestrator
+  async function loadAndRender(){
+    if(!container){
+      console.warn('YT: #videos not found in DOM.');
+      return;
+    }
+    showMsg('Ładowanie filmów...');
+
+    // 1. resolve channelId
+    const channelId = await resolveChannelId(HANDLE);
+    if(!channelId){
+      showMsg(`Nie znaleziono kanału dla handle <strong>${escapeHtml(HANDLE)}</strong>. Możliwe przyczyny: niepoprawny klucz API, ograniczenia referrera, lub handle nie istnieje. Sprawdź konsolę (zdalne debugowanie).`);
+      return;
+    }
+
+    // 2. get uploads playlist
+    const uploadsPlaylist = await getUploadsPlaylistId(channelId);
+    if(!uploadsPlaylist){
+      showMsg('Nie udało się pobrać playlisty uploads dla kanału. Sprawdź uprawnienia API w Google Cloud.');
+      return;
+    }
+
+    // 3. fetch latest videos
+    const vids = await fetchLatestFromPlaylist(uploadsPlaylist, MAX_RESULTS);
+    if(!vids.length){
+      showMsg('Brak najnowszych filmów do wyświetlenia (lub API zwróciło pustą odpowiedź). Sprawdź konsolę.');
+      return;
+    }
+
+    // 4. render
+    container.innerHTML = '';
+    vids.forEach(v => {
+      const a = document.createElement('a');
+      a.className = 'video-card';
+      a.href = `https://www.youtube.com/watch?v=${v.id}`;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.innerHTML = `
+        <img src="${v.thumb}" alt="${escapeHtml(v.title)}" onerror="this.onerror=null;this.src='https://via.placeholder.com/480x270?text=No+thumb'">
+        <div class="meta">${escapeHtml(v.title)}</div>
+      `;
+      container.appendChild(a);
+    });
+  }
+
+  // Run it
+  loadAndRender().catch(e => {
+    console.error('YT loadAndRender crashed', e);
+    if(container) showMsg('Błąd podczas ładowania filmów — sprawdź konsolę.');
+  });
+
+  // Helpful message for diagnostics
+  console.log('YT loader initialized (handle:', HANDLE, '). Jeśli filmy się nie ładują -> sprawdź console/network i ustawienia API key (Referer).');
+})();
+
+    // small HTML escape helper
+    function escapeHtml(s){ return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
+
+    // ---------------- Countdown logic ----------------
+    // We'll compute next 21:00 in local time (user's browser zone).
+    // Your project requested CET/CEST according to Polish time — if the user's browser is in Poland this equals Europe/Warsaw.
+    function getNext21Local(){
+      const now = new Date();
+      const target = new Date(now);
+      target.setHours(21,0,0,0);
+      if(target <= now) target.setDate(target.getDate() + 1);
+      return target;
+    }
+
+    function pad(n){ return String(n).padStart(2,'0') }
+    function updateCountdown(){
+      const now = new Date();
+      let target = window._nh_next21 || getNext21Local();
+      if(now >= target){
+        target = getNext21Local();
+        window._nh_next21 = target;
+      }
+      const diff = Math.max(0, target - now);
+      const s = Math.floor(diff/1000)%60;
+      const m = Math.floor(diff/60000)%60;
+      const h = Math.floor(diff/3600000)%24;
+      const d = Math.floor(diff / (24*3600000));
+      const out = (d? (d+'d ') : '') + `${pad(h)}:${pad(m)}:${pad(s)}`;
+      const el = document.getElementById('countdown-value');
+      // gentle fade animation
+      el.style.transform = 'translateY(-6px) scale(0.99)';
+      el.style.opacity = '0.85';
+      setTimeout(()=>{ el.textContent = out; el.style.transform='translateY(0) scale(1)'; el.style.opacity='1' }, 120);
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // ---------------- Utility: allow user to set custom logo/hero via prompt (dev convenience) -----------
+    // (You can remove this in production)
+    document.getElementById('home-link').addEventListener('dblclick', ()=>{
+      const l = prompt('Podaj URL logo (pusty = placeholder):', logoImg.src);
+      if(l !== null){ logoImg.src = l || defaultLogo; drawerLogo.src = l || defaultLogo; }
+      const h = prompt('Podaj URL tła hero (pusty = placeholder):', hero.style.backgroundImage.replace(/^url\(['"]?/,'').replace(/['"]?\)$/,''));
+      if(h !== null){ hero.style.backgroundImage = `url('${h || defaultHero}')` }
+    });
+
+    // Helpful: show user where to insert YT key if missing
+    if(CONFIG.YOUTUBE.API_KEY.startsWith('REPLACE')){
+      console.warn('YouTube API key is missing - insert it in CONFIG.YOUTUBE.API_KEY to load videos.');
+    }
+
+    // END module script
+  </script>
+</body>
+</html>
