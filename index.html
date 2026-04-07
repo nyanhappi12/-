@@ -268,371 +268,528 @@
   <!-- SCRIPTS - Firebase + App logic -->
   <!-- Firebase SDK (module style) - uses the config you provided earlier -->
   <script type="module">
-    // ----------------------- CONFIG (EDYTUJ TUTAJ) -----------------------
-    const CONFIG = {
-      CLOUDINARY: {
-        cloudName: '226846279479333',      // provided
-        unsignedPreset: 'NyanHappi'        // provided
-      },
-      FIREBASE: {
-        apiKey: "AIzaSyA6B1a0I1m7hXPwblW8diKsW1nnDVmGEP0",
-        authDomain: "nyanhappi12.firebaseapp.com",
-        projectId: "nyanhappi12",
-        storageBucket: "nyanhappi12.firebasestorage.app",
-        messagingSenderId: "197042141276",
-        appId: "1:197042141276:web:d9f1c73f569f9180a40e99",
-        measurementId: "G-RW1PDZR1X5"
-      },
-      YOUTUBE: {
-        API_KEY: "REPLACE_WITH_YOUR_YOUTUBE_API_KEY", // <-- WSTAW TU SWÓJ YouTube Data API v3 KEY
-        HANDLE: "@nyanhappi12cute"
-      }
-    };
-    // ---------------------------------------------------------------------
-
-    // -------- Firebase imports (modular) ----------
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-    // init firebase
-    const firebaseApp = initializeApp(CONFIG.FIREBASE);
-    try { getAnalytics(firebaseApp); } catch(e) { /* analytics optional */ }
-    const auth = getAuth(firebaseApp);
-    const db = getFirestore(firebaseApp);
-
-    // DOM references
-    const drawerWrap = document.getElementById('drawerWrap');
-    const menuOpen = document.getElementById('menu-open');
-    const drawerClose = document.getElementById('drawerClose');
-    const drawerBackdrop = document.getElementById('drawerBackdrop')
-    const accountLink = document.getElementById('account-link');
-    const logoImg = document.getElementById('logo-img');
-    const drawerLogo = document.getElementById('drawer-logo');
-    const hero = document.getElementById('hero');
-    const videosContainer = document.getElementById('videos');
-    const footerTheme = document.getElementById('footer-theme');
-    const themeLightBtn = document.getElementById('theme-light');
-    const themeDarkBtn = document.getElementById('theme-dark');
-
-    // load logos/placeholders (you will replace later)
-    const defaultLogo = 'https://nyanhappi12.neocities.org/site_files/Copilot_20251213_004258_11zon (1).png';
-    const defaultHero = 'https://nyanhappi12.neocities.org/site_files/Copilot_20251213_004258_11zon (1).png';
-    logoImg.src = defaultLogo;
-    drawerLogo.src = defaultLogo;
-    hero.style.backgroundImage = `url('${defaultHero}')`;
-
-    // Theme (localStorage + if logged in, optionally store to Firestore)
-    const THEME_KEY = 'nh_theme';
-    function applyTheme(theme){
-      document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
-      footerTheme.textContent = theme === 'light' ? 'jasny' : 'ciemny';
-      localStorage.setItem(THEME_KEY, theme);
-      // if logged in: (optionally) write to Firestore (we'll do this after login)
+  // ----------------------- CONFIG -----------------------
+  const CONFIG = {
+    CLOUDINARY: {
+      cloudName: '226846279479333',
+      unsignedPreset: 'NyanHappi'
+    },
+    FIREBASE: {
+      apiKey: "AIzaSyA6B1a0I1m7hXPwblW8diKsW1nnDVmGEP0",
+      authDomain: "nyanhappi12.firebaseapp.com",
+      projectId: "nyanhappi12",
+      storageBucket: "nyanhappi12.firebasestorage.app",
+      messagingSenderId: "197042141276",
+      appId: "1:197042141276:web:d9f1c73f569f9180a40e99",
+      measurementId: "G-RW1PDZR1X5"
+    },
+    YOUTUBE: {
+      API_KEY: "AIzaSyCrdS7Sou5-VsrHTZAgsPA3SSCJP8qHrQk",
+      HANDLE: "@nyanhappi12cute"
     }
-    // init theme
-    const saved = localStorage.getItem(THEME_KEY) || 'dark';
-    applyTheme(saved);
-    themeLightBtn.onclick = ()=>applyTheme('light');
-    themeDarkBtn.onclick = ()=>applyTheme('dark');
+  };
 
-    // Drawer open/close with 5s smooth show when open (CSS handles transition-duration)
-    function openDrawer(){
-      drawerWrap.classList.add('open');
-      drawerWrap.setAttribute('aria-hidden','false');
-    }
-    function closeDrawer(){
-      drawerWrap.classList.remove('open');
-      drawerWrap.setAttribute('aria-hidden','true');
-    }
-    menuOpen.addEventListener('click', openDrawer);
-    drawerClose.addEventListener('click', closeDrawer);
-    drawerBackdrop.addEventListener('click', closeDrawer);
+  // ----------------------- FIREBASE IMPORTS -----------------------
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-    // ----- Auth handlers -----
-    let accountDoc = null;
-    onAuthStateChanged(auth, async (user)=>{
-      if(user){
-        // fetch/create accounts/{uid}
-        const docRef = doc(db, 'accounts', user.uid);
-        try{
-          const snap = await getDoc(docRef);
-          if(!snap.exists()){
-            // create basic account
-            await setDoc(docRef, {
-              display_name: user.displayName || user.email || 'Użytkownik',
-              createdAt: new Date().toISOString()
-            });
-            accountDoc = { display_name: user.displayName || user.email || 'Użytkownik', id: user.uid };
-          } else {
-            accountDoc = { id: snap.id, ...snap.data() };
-          }
-          // update UI
-          accountLink.href = `/konto/${accountDoc.id}`;
-          // add session_id to URL as requested
-          const u = new URL(window.location.href);
-          u.searchParams.set('session_id', accountDoc.id);
-          window.history.replaceState({}, '', u.toString());
-        }catch(e){ console.error(e) }
-      } else {
-        accountDoc = null;
-        accountLink.href = '/login/';
-        // remove session_id
-        const u = new URL(window.location.href);
-        u.searchParams.delete('session_id');
-        window.history.replaceState({}, '', u.toString());
-      }
-    });
+  // ----------------------- INIT -----------------------
+  const firebaseApp = initializeApp(CONFIG.FIREBASE);
+  try { getAnalytics(firebaseApp); } catch (e) {}
+  const auth = getAuth(firebaseApp);
+  const db = getFirestore(firebaseApp);
+  const provider = new GoogleAuthProvider();
 
-    // login/logout
-    accountLink.addEventListener('click', async ()=>{
-      const user = auth.currentUser;
-      if(user){
-        // go to profile
-        if(accountDoc && accountDoc.id) window.location.href = `/konto/${accountDoc.id}`;
-        else alert('Trwa ładowanie konta...');
-      } else {
-        // show login
-        const provider = new GoogleAuthProvider();
-        try{
-          await signInWithPopup(auth, provider);
-        }catch(e){ alert('Błąd logowania: '+e.message) }
-      }
-    });
+  // ----------------------- DOM -----------------------
+  const drawerWrap = document.getElementById('drawerWrap');
+  const menuOpen = document.getElementById('menu-open');
+  const drawerClose = document.getElementById('drawerClose');
+  const drawerBackdrop = document.getElementById('drawerBackdrop');
+  const accountLink = document.getElementById('account-link');
+  const logoImg = document.getElementById('logo-img');
+  const drawerLogo = document.getElementById('drawer-logo');
+  const hero = document.getElementById('hero');
+  const videosContainer = document.getElementById('videos');
+  const footerTheme = document.getElementById('footer-theme');
+  const themeLightBtn = document.getElementById('theme-light');
+  const themeDarkBtn = document.getElementById('theme-dark');
 
-    // Quick signout (for debugging) - long press account button (optional)
-    accountLink.addEventListener('contextmenu', async (ev)=>{
-      ev.preventDefault();
-      if(confirm('Wylogować?')) { await signOut(auth); alert('Wylogowano') }
-    });
+  // ----------------------- ASSETS -----------------------
+  const defaultLogo = 'https://nyanhappi12.neocities.org/site_files/Copilot_20251213_004258_11zon (1).png';
+  const defaultHero = 'https://via.placeholder.com/1600x700';
+  if (logoImg) logoImg.src = defaultLogo;
+  if (drawerLogo) drawerLogo.src = defaultLogo;
+  if (hero) hero.style.backgroundImage = `url('${defaultHero}')`;
 
-    // ---------------- Cloudinary unsigned upload helper ----------------
-    async function uploadToCloudinary(file){
-      const url = `https://api.cloudinary.com/v1_1/${CONFIG.CLOUDINARY.cloudName}/upload`;
-      const fd = new FormData();
-      fd.append('file', file);
-      fd.append('upload_preset', CONFIG.CLOUDINARY.unsignedPreset);
-      const resp = await fetch(url, { method:'POST', body:fd });
-      if(!resp.ok) throw new Error('Upload failed');
-      return resp.json();
-    }
-    // Note: no upload UI on index.html yet — can add later.
+  // ----------------------- ACCOUNT / SESSION -----------------------
+  let accountDoc = null;
+  const THEME_KEY = 'nh_theme';
+  const SESSION_KEY = 'nh_session_id';
 
-    // ---------- YouTube: robust loader (zamień stary blok tym) ----------
-(() => {
-  // Preferuj klucz z CONFIG, fall back do lokalnie wstawionego YT_KEY
-  const API_KEY = (window.CONFIG && CONFIG.YOUTUBE && CONFIG.YOUTUBE.API_KEY) || "AIzaSyCrdS7Sou5-VsrHTZAgsPA3SSCJP8qHrQk";
-  // handle może być w CONFIG z @ lub bez — normalizujemy
-  const RAW_HANDLE = (window.CONFIG && CONFIG.YOUTUBE && CONFIG.YOUTUBE.HANDLE) || 'nyanhappi12_cute';
-  const HANDLE = RAW_HANDLE.startsWith('@') ? RAW_HANDLE : '@' + RAW_HANDLE;
-  const MAX_RESULTS = 3;
+  function setAccountMenuLabel(name, uid) {
+    if (!accountLink) return;
 
-  const container = document.getElementById('videos');
-
-  function showMsg(html){
-    if(!container) return;
-    container.innerHTML = `<div style="grid-column:1/-1;padding:12px;color:var(--muted)">${html}</div>`;
-  }
-
-  async function safeFetchJson(url){
-    try{
-      const resp = await fetch(url);
-      const json = await resp.json().catch(()=>null);
-      return { ok: resp.ok, status: resp.status, json };
-    }catch(e){
-      return { ok:false, status:0, json:null, error:e };
+    if (name && uid) {
+      accountLink.innerHTML = `<span class="material-symbols-rounded">account_circle</span>${name}`;
+      accountLink.href = `/konto/${uid}`;
+    } else {
+      accountLink.innerHTML = `<span class="material-symbols-rounded">account_circle</span>Konto`;
+      accountLink.href = '/login/';
     }
   }
 
-  function escapeHtml(s){ return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
+  function setSessionId(id) {
+    if (!id) return;
+    try {
+      const u = new URL(window.location.href);
+      u.searchParams.set('session_id', id);
+      window.history.replaceState({}, '', u.toString());
+    } catch (e) {}
+    try { localStorage.setItem(SESSION_KEY, id); } catch (e) {}
+  }
 
-  async function resolveChannelId(handle){
-    if(!API_KEY || API_KEY.startsWith('REPLACE')){
-      console.warn('YT: API key missing or placeholder');
+  function clearSessionId() {
+    try {
+      const u = new URL(window.location.href);
+      u.searchParams.delete('session_id');
+      window.history.replaceState({}, '', u.toString());
+    } catch (e) {}
+    try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+  }
+
+  async function loadAccountById(uid) {
+    if (!uid) return null;
+    try {
+      const ref = doc(db, 'accounts', uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return null;
+      return { id: snap.id, ...snap.data() };
+    } catch (e) {
+      console.warn('loadAccountById failed', e);
       return null;
     }
-    const plain = handle.replace(/^@/,'');
-    // 1) try channels.forHandle
-    try{
-      const url = `https://www.googleapis.com/youtube/v3/channels?part=id&id&forHandle=${encodeURIComponent(plain)}&key=${API_KEY}`;
-      // (note: some projects prefer part=id;forHandle)
-      const r = await safeFetchJson(url);
-      console.log('YT channels.forHandle ->', r.status, r.json);
-      if(r.json && r.json.error){
-        console.warn('YT channels.forHandle error:', r.json.error);
-      }
-      if(r.json && Array.isArray(r.json.items) && r.json.items.length){
-        return r.json.items[0].id;
-      }
-    }catch(e){ console.warn('YT forHandle failed', e); }
+  }
 
-    // 2) fallback: search.list for channels
-    try{
-      const sUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&q=${encodeURIComponent(plain)}&key=${API_KEY}`;
-      const r2 = await safeFetchJson(sUrl);
-      console.log('YT search.list fallback ->', r2.status, r2.json);
-      if(r2.json && r2.json.error){
-        console.warn('YT search fallback error:', r2.json.error);
-      }
-      if(r2.json && Array.isArray(r2.json.items) && r2.json.items.length){
-        // channelId may be in snippet.channelId or in id.channelId
-        const maybe = r2.json.items[0].snippet?.channelId || r2.json.items[0].id?.channelId;
-        return maybe || null;
-      }
-    }catch(e){ console.warn('YT search fallback failed', e); }
+  async function bootstrapSessionFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id') || (() => {
+      try { return localStorage.getItem(SESSION_KEY); } catch (e) { return null; }
+    })();
 
+    if (!sessionId) return null;
+
+    const docData = await loadAccountById(sessionId);
+    if (docData) {
+      accountDoc = docData;
+      setAccountMenuLabel(accountDoc.display_name || 'Konto', accountDoc.id);
+      return accountDoc;
+    }
+
+    clearSessionId();
     return null;
   }
 
-  // get uploads playlistId via channels.list?part=contentDetails&id=channelId
-  async function getUploadsPlaylistId(channelId){
-    try{
-      const url = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${encodeURIComponent(channelId)}&key=${API_KEY}`;
-      const r = await safeFetchJson(url);
-      console.log('YT channels.contentDetails ->', r.status, r.json);
-      if(r.json && r.json.error){
-        console.error('YT contentDetails error', r.json.error);
-        return null;
-      }
-      if(r.json && Array.isArray(r.json.items) && r.json.items.length){
-        return r.json.items[0].contentDetails?.relatedPlaylists?.uploads || null;
-      }
-    }catch(e){ console.warn('YT getUploadsPlaylistId failed', e); }
-    return null;
+  // ----------------------- THEME -----------------------
+  function applyTheme(theme, persistToFirestore = true) {
+    const t = theme === 'light' ? 'light' : 'dark';
+    try { document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+    try { document.body.setAttribute('data-theme', t); } catch (e) {}
+    if (footerTheme) footerTheme.textContent = t === 'light' ? 'jasny' : 'ciemny';
+    try { localStorage.setItem(THEME_KEY, t); } catch (e) {}
+
+    if (persistToFirestore && accountDoc && accountDoc.id) {
+      try {
+        setDoc(doc(db, 'accounts', accountDoc.id), { theme: t }, { merge: true }).catch(() => {});
+      } catch (e) {}
+    }
   }
 
-  // fetch playlist items (latest uploads)
-  async function fetchLatestFromPlaylist(playlistId, maxResults = MAX_RESULTS){
-    if(!playlistId) return [];
-    try{
-      const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${encodeURIComponent(playlistId)}&maxResults=${maxResults}&key=${API_KEY}`;
-      const r = await safeFetchJson(url);
-      console.log('YT playlistItems ->', r.status, r.json);
-      if(r.json && r.json.error){
-        console.error('YT playlistItems error', r.json.error);
-        return [];
-      }
-      if(!r.json || !Array.isArray(r.json.items)) return [];
-      const out = r.json.items
-        .filter(it => it.snippet && it.snippet.resourceId && it.snippet.resourceId.videoId)
-        .map(it => {
-          const vid = it.snippet.resourceId.videoId;
-          const thumb = it.snippet?.thumbnails?.high?.url || it.snippet?.thumbnails?.medium?.url || it.snippet?.thumbnails?.default?.url || '';
-          const title = it.snippet?.title || 'Brak tytułu';
-          return { id: vid, title, thumb };
-        });
-      return out;
-    }catch(e){ console.error('YT fetchLatestFromPlaylist failed', e); return []; }
+  const savedTheme = (() => {
+    try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; }
+  })() || 'dark';
+  applyTheme(savedTheme, false);
+
+  if (themeLightBtn) themeLightBtn.onclick = () => applyTheme('light');
+  if (themeDarkBtn) themeDarkBtn.onclick = () => applyTheme('dark');
+
+  // ----------------------- DRAWER -----------------------
+  function removeGlobalDrawerListeners() {
+    document.removeEventListener('pointerdown', outsideDrawerHandler);
+    document.removeEventListener('touchstart', outsideDrawerHandler);
+    document.removeEventListener('keydown', escCloseHandler);
   }
 
-  // orchestrator
-  async function loadAndRender(){
-    if(!container){
-      console.warn('YT: #videos not found in DOM.');
-      return;
-    }
-    showMsg('Ładowanie filmów...');
+  function closeDrawer() {
+    if (!drawerWrap) return;
+    const drawerEl = drawerWrap.querySelector('.drawer');
 
-    // 1. resolve channelId
-    const channelId = await resolveChannelId(HANDLE);
-    if(!channelId){
-      showMsg(`Nie znaleziono kanału dla handle <strong>${escapeHtml(HANDLE)}</strong>. Możliwe przyczyny: niepoprawny klucz API, ograniczenia referrera, lub handle nie istnieje. Sprawdź konsolę (zdalne debugowanie).`);
-      return;
-    }
+    drawerWrap.classList.remove('open');
 
-    // 2. get uploads playlist
-    const uploadsPlaylist = await getUploadsPlaylistId(channelId);
-    if(!uploadsPlaylist){
-      showMsg('Nie udało się pobrać playlisty uploads dla kanału. Sprawdź uprawnienia API w Google Cloud.');
-      return;
+    let cleaned = false;
+    function cleanUpAfterClose() {
+      if (cleaned) return;
+      cleaned = true;
+      drawerWrap.setAttribute('aria-hidden', 'true');
+      removeGlobalDrawerListeners();
+      if (drawerEl) drawerEl.removeEventListener('transitionend', onTransitionEnd);
     }
 
-    // 3. fetch latest videos
-    const vids = await fetchLatestFromPlaylist(uploadsPlaylist, MAX_RESULTS);
-    if(!vids.length){
-      showMsg('Brak najnowszych filmów do wyświetlenia (lub API zwróciło pustą odpowiedź). Sprawdź konsolę.');
-      return;
+    function onTransitionEnd(e) {
+      if (e.target === drawerEl) cleanUpAfterClose();
     }
 
-    // 4. render
-    container.innerHTML = '';
-    vids.forEach(v => {
-      const a = document.createElement('a');
-      a.className = 'video-card';
-      a.href = `https://www.youtube.com/watch?v=${v.id}`;
-      a.target = '_blank';
-      a.rel = 'noopener';
-      a.innerHTML = `
-        <img src="${v.thumb}" alt="${escapeHtml(v.title)}" onerror="this.onerror=null;this.src='https://via.placeholder.com/480x270?text=No+thumb'">
-        <div class="meta">${escapeHtml(v.title)}</div>
-      `;
-      container.appendChild(a);
-    });
+    if (drawerEl) drawerEl.addEventListener('transitionend', onTransitionEnd);
+    setTimeout(cleanUpAfterClose, 700);
   }
 
-  // Run it
-  loadAndRender().catch(e => {
-    console.error('YT loadAndRender crashed', e);
-    if(container) showMsg('Błąd podczas ładowania filmów — sprawdź konsolę.');
+  function openDrawer() {
+    if (!drawerWrap) return;
+    drawerWrap.classList.add('open');
+    drawerWrap.setAttribute('aria-hidden', 'false');
+
+    setTimeout(() => {
+      document.addEventListener('pointerdown', outsideDrawerHandler);
+      document.addEventListener('touchstart', outsideDrawerHandler, { passive: true });
+      document.addEventListener('keydown', escCloseHandler);
+    }, 0);
+  }
+
+  function escCloseHandler(e) {
+    if (e.key === 'Escape' || e.key === 'Esc') closeDrawer();
+  }
+
+  function outsideDrawerHandler(e) {
+    if (!drawerWrap || !drawerWrap.classList.contains('open')) return;
+
+    const drawerEl = drawerWrap.querySelector('.drawer');
+    const path = e.composedPath ? e.composedPath() : (e.path || []);
+    const target = path && path.length ? path[0] : e.target;
+
+    if (drawerEl && drawerEl.contains(target)) return;
+    if (menuOpen && menuOpen.contains(target)) return;
+
+    let el = target;
+    while (el) {
+      if (el.nodeType === 1 && el.hasAttribute && el.hasAttribute('data-no-close')) return;
+      el = el.parentElement;
+    }
+
+    closeDrawer();
+  }
+
+  menuOpen?.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    openDrawer();
   });
 
-  // Helpful message for diagnostics
-  console.log('YT loader initialized (handle:', HANDLE, '). Jeśli filmy się nie ładują -> sprawdź console/network i ustawienia API key (Referer).');
-})();
+  drawerClose?.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    closeDrawer();
+  });
 
-    // small HTML escape helper
-    function escapeHtml(s){ return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
+  drawerBackdrop?.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    closeDrawer();
+  });
 
-    // ---------------- Countdown logic ----------------
-    // We'll compute next 21:00 in local time (user's browser zone).
-    // Your project requested CET/CEST according to Polish time — if the user's browser is in Poland this equals Europe/Warsaw.
-    function getNext21Local(){
-      const now = new Date();
-      const target = new Date(now);
-      target.setHours(21,0,0,0);
-      if(target <= now) target.setDate(target.getDate() + 1);
-      return target;
+  // ----------------------- AUTH -----------------------
+  async function ensureAccountDocForUser(user) {
+    const ref = doc(db, 'accounts', user.uid);
+
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+      await setDoc(ref, {
+        display_name: user.displayName || user.email || 'Użytkownik',
+        createdAt: new Date().toISOString()
+      });
+      return {
+        id: user.uid,
+        display_name: user.displayName || user.email || 'Użytkownik'
+      };
     }
 
-    function pad(n){ return String(n).padStart(2,'0') }
-    function updateCountdown(){
-      const now = new Date();
-      let target = window._nh_next21 || getNext21Local();
-      if(now >= target){
-        target = getNext21Local();
-        window._nh_next21 = target;
+    return { id: snap.id, ...snap.data() };
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      try {
+        accountDoc = await ensureAccountDocForUser(user);
+        setAccountMenuLabel(accountDoc.display_name || 'Konto', accountDoc.id);
+        setSessionId(accountDoc.id);
+
+        try {
+          if (accountDoc && accountDoc.theme) applyTheme(accountDoc.theme, false);
+        } catch (e) {}
+      } catch (e) {
+        console.error('fetch account failed', e);
       }
-      const diff = Math.max(0, target - now);
-      const s = Math.floor(diff/1000)%60;
-      const m = Math.floor(diff/60000)%60;
-      const h = Math.floor(diff/3600000)%24;
-      const d = Math.floor(diff / (24*3600000));
-      const out = (d? (d+'d ') : '') + `${pad(h)}:${pad(m)}:${pad(s)}`;
-      const el = document.getElementById('countdown-value');
-      // gentle fade animation
-      el.style.transform = 'translateY(-6px) scale(0.99)';
-      el.style.opacity = '0.85';
-      setTimeout(()=>{ el.textContent = out; el.style.transform='translateY(0) scale(1)'; el.style.opacity='1' }, 120);
+      return;
     }
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
 
-    // ---------------- Utility: allow user to set custom logo/hero via prompt (dev convenience) -----------
-    // (You can remove this in production)
-    document.getElementById('home-link').addEventListener('dblclick', ()=>{
-      const l = prompt('Podaj URL logo (pusty = placeholder):', logoImg.src);
-      if(l !== null){ logoImg.src = l || defaultLogo; drawerLogo.src = l || defaultLogo; }
-      const h = prompt('Podaj URL tła hero (pusty = placeholder):', hero.style.backgroundImage.replace(/^url\(['"]?/,'').replace(/['"]?\)$/,''));
-      if(h !== null){ hero.style.backgroundImage = `url('${h || defaultHero}')` }
+    const sessionDoc = await bootstrapSessionFromUrl();
+    if (sessionDoc) {
+      accountDoc = sessionDoc;
+      setAccountMenuLabel(accountDoc.display_name || 'Konto', accountDoc.id);
+      return;
+    }
+
+    accountDoc = null;
+    setAccountMenuLabel(null, null);
+    clearSessionId();
+  });
+
+  accountLink?.addEventListener('click', async (e) => {
+    const user = auth.currentUser;
+
+    if (user) {
+      if (accountDoc && accountDoc.id) {
+        window.location.href = `/konto/${accountDoc.id}`;
+      } else {
+        window.location.href = '/konto/';
+      }
+      return;
+    }
+
+    if (accountDoc && accountDoc.id) {
+      window.location.href = `/konto/${accountDoc.id}`;
+      return;
+    }
+
+    e.preventDefault();
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (err) {
+      alert('Błąd logowania: ' + (err && err.message || err));
+    }
+  });
+
+  accountLink?.addEventListener('contextmenu', async (ev) => {
+    ev.preventDefault();
+    if (confirm('Wylogować?')) {
+      await signOut(auth);
+      alert('Wylogowano');
+    }
+  });
+
+  // ----------------------- CLOUDINARY HELPER -----------------------
+  async function uploadToCloudinary(file) {
+    const url = `https://api.cloudinary.com/v1_1/${CONFIG.CLOUDINARY.cloudName}/upload`;
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CONFIG.CLOUDINARY.unsignedPreset);
+    const resp = await fetch(url, { method: 'POST', body: fd });
+    if (!resp.ok) throw new Error('Upload failed');
+    return resp.json();
+  }
+
+  // ----------------------- UTILITIES -----------------------
+  function escapeHtml(s) {
+    return s ? s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+  }
+
+  // ----------------------- YOUTUBE LOADER -----------------------
+  (() => {
+    const API_KEY = CONFIG.YOUTUBE.API_KEY;
+    const RAW_HANDLE = CONFIG.YOUTUBE.HANDLE || 'nyanhappi12_cute';
+    const HANDLE = RAW_HANDLE.startsWith('@') ? RAW_HANDLE : '@' + RAW_HANDLE;
+    const MAX_RESULTS = 3;
+    const container = document.getElementById('videos');
+
+    function showMsg(html) {
+      if (!container) return;
+      container.innerHTML = `<div style="grid-column:1/-1;padding:12px;color:var(--muted)">${html}</div>`;
+    }
+
+    async function safeFetchJson(url) {
+      try {
+        const resp = await fetch(url);
+        const json = await resp.json().catch(() => null);
+        return { ok: resp.ok, status: resp.status, json };
+      } catch (e) {
+        return { ok: false, status: 0, json: null, error: e };
+      }
+    }
+
+    async function resolveChannelId(handle) {
+      if (!API_KEY || API_KEY.startsWith('REPLACE')) {
+        console.warn('YT: API key missing or placeholder');
+        return null;
+      }
+
+      const plain = handle.replace(/^@/, '');
+
+      try {
+        const url = `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=${encodeURIComponent(plain)}&key=${API_KEY}`;
+        const r = await safeFetchJson(url);
+        if (r.json && Array.isArray(r.json.items) && r.json.items.length) {
+          return r.json.items[0].id;
+        }
+      } catch (e) {
+        console.warn('YT forHandle failed', e);
+      }
+
+      try {
+        const sUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&q=${encodeURIComponent(plain)}&key=${API_KEY}`;
+        const r2 = await safeFetchJson(sUrl);
+        if (r2.json && Array.isArray(r2.json.items) && r2.json.items.length) {
+          return r2.json.items[0].snippet?.channelId || r2.json.items[0].id?.channelId || null;
+        }
+      } catch (e) {
+        console.warn('YT search fallback failed', e);
+      }
+
+      return null;
+    }
+
+    async function getUploadsPlaylistId(channelId) {
+      try {
+        const url = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${encodeURIComponent(channelId)}&key=${API_KEY}`;
+        const r = await safeFetchJson(url);
+        if (r.json && Array.isArray(r.json.items) && r.json.items.length) {
+          return r.json.items[0].contentDetails?.relatedPlaylists?.uploads || null;
+        }
+      } catch (e) {
+        console.warn('YT getUploadsPlaylistId failed', e);
+      }
+      return null;
+    }
+
+    async function fetchLatestFromPlaylist(playlistId, maxResults = MAX_RESULTS) {
+      if (!playlistId) return [];
+      try {
+        const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${encodeURIComponent(playlistId)}&maxResults=${maxResults}&key=${API_KEY}`;
+        const r = await safeFetchJson(url);
+        if (!r.json || !Array.isArray(r.json.items)) return [];
+
+        return r.json.items
+          .filter(it => it.snippet && it.snippet.resourceId && it.snippet.resourceId.videoId)
+          .map(it => {
+            const vid = it.snippet.resourceId.videoId;
+            const thumb = it.snippet?.thumbnails?.high?.url || it.snippet?.thumbnails?.medium?.url || it.snippet?.thumbnails?.default?.url || '';
+            const title = it.snippet?.title || 'Brak tytułu';
+            return { id: vid, title, thumb };
+          });
+      } catch (e) {
+        console.error('YT fetchLatestFromPlaylist failed', e);
+        return [];
+      }
+    }
+
+    async function loadAndRender() {
+      if (!container) {
+        console.warn('YT: #videos not found in DOM.');
+        return;
+      }
+
+      showMsg('Ładowanie filmów...');
+
+      const channelId = await resolveChannelId(HANDLE);
+      if (!channelId) {
+        showMsg(`Nie znaleziono kanału dla handle <strong>${escapeHtml(HANDLE)}</strong>.`);
+        return;
+      }
+
+      const uploadsPlaylist = await getUploadsPlaylistId(channelId);
+      if (!uploadsPlaylist) {
+        showMsg('Nie udało się pobrać playlisty uploads dla kanału.');
+        return;
+      }
+
+      const vids = await fetchLatestFromPlaylist(uploadsPlaylist, MAX_RESULTS);
+      if (!vids.length) {
+        showMsg('Brak najnowszych filmów do wyświetlenia.');
+        return;
+      }
+
+      container.innerHTML = '';
+      vids.forEach(v => {
+        const a = document.createElement('a');
+        a.className = 'video-card';
+        a.href = `https://www.youtube.com/watch?v=${v.id}`;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.innerHTML = `
+          <img src="${v.thumb}" alt="${escapeHtml(v.title)}" onerror="this.onerror=null;this.src='https://via.placeholder.com/480x270?text=No+thumb'">
+          <div class="meta">${escapeHtml(v.title)}</div>
+        `;
+        container.appendChild(a);
+      });
+    }
+
+    loadAndRender().catch(e => {
+      console.error('YT loadAndRender crashed', e);
+      if (container) showMsg('Błąd podczas ładowania filmów — sprawdź konsolę.');
     });
 
-    // Helpful: show user where to insert YT key if missing
-    if(CONFIG.YOUTUBE.API_KEY.startsWith('REPLACE')){
-      console.warn('YouTube API key is missing - insert it in CONFIG.YOUTUBE.API_KEY to load videos.');
+    console.log('YT loader initialized (handle:', HANDLE, ').');
+  })();
+
+  // ----------------------- COUNTDOWN -----------------------
+  function getNext21Local() {
+    const now = new Date();
+    const target = new Date(now);
+    target.setHours(21, 0, 0, 0);
+    if (target <= now) target.setDate(target.getDate() + 1);
+    return target;
+  }
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function updateCountdown() {
+    const el = document.getElementById('countdown-value');
+    if (!el) return;
+
+    const now = new Date();
+    let target = window._nh_next21 || getNext21Local();
+    if (now >= target) {
+      target = getNext21Local();
+      window._nh_next21 = target;
     }
 
-    // END module script
-  </script>
+    const diff = Math.max(0, target - now);
+    const s = Math.floor(diff / 1000) % 60;
+    const m = Math.floor(diff / 60000) % 60;
+    const h = Math.floor(diff / 3600000) % 24;
+    const d = Math.floor(diff / (24 * 3600000));
+    const out = (d ? (d + 'd ') : '') + `${pad(h)}:${pad(m)}:${pad(s)}`;
+
+    el.style.transform = 'translateY(-6px) scale(0.99)';
+    el.style.opacity = '0.85';
+    setTimeout(() => {
+      el.textContent = out;
+      el.style.transform = 'translateY(0) scale(1)';
+      el.style.opacity = '1';
+    }, 120);
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // ----------------------- INIT SESSION LABEL EARLY -----------------------
+  bootstrapSessionFromUrl();
+
+  // ----------------------- DEV DOUBLE CLICK (optional) -----------------------
+  document.getElementById('home-link')?.addEventListener('dblclick', () => {
+    const l = prompt('Podaj URL logo (pusty = placeholder):', logoImg.src);
+    if (l !== null) {
+      logoImg.src = l || defaultLogo;
+      drawerLogo.src = l || defaultLogo;
+    }
+    const h = prompt(
+      'Podaj URL tła hero (pusty = placeholder):',
+      hero.style.backgroundImage.replace(/^url\(['"]?/, '').replace(/['"]?\)$/, '')
+    );
+    if (h !== null) {
+      hero.style.backgroundImage = `url('${h || defaultHero}')`;
+    }
+  });
+
+  if (CONFIG.YOUTUBE.API_KEY.startsWith('REPLACE')) {
+    console.warn('YouTube API key is missing - insert it in CONFIG.YOUTUBE.API_KEY to load videos.');
+  }
+</script>
 </body>
 </html>
