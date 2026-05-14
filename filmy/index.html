@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NyanHappi12 — Filmy (Wszystkie odcinki) — 2026</title>
+
+  <!-- Google Fonts -->
+<link rel="icon" type="image/png" href="https://nyanhappi12.github.io/site_files/NyanHappi12_icon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#071225;
+      --card:rgba(255,255,255,0.95);
+      --muted:#9aa4b2;    
+      --accent-1: #ff6fb5;
+      --accent-2: #7c4dff;
+      --glass: rgba(255,255,255,0.06);
+    }
+    [data-theme="light"]{
+      --bg:#f7fbf8;
+      --card:#ffffff;
+      --muted:#55606a;
+      --glass: rgba(0,0,0,0.04);
+    }
+
+    html,body{height:100%}
+    body{
+      margin:0;font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background: linear-gradient(180deg,#071225 0%, #021017 100%); color: #fff;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    [data-theme="light"] body{
+      background: linear-gradient(180deg,#f8fafc 0%, #ffffff 100%);
+      color:#0b1220;
+    }
+
+    /* subtle snow overlay (holiday) */
+    .snow-wrap{pointer-events:none; position:fixed; inset:0; z-index:80; opacity:0.12}
+    @keyframes fall{
+      0% { transform: translateY(-10vh) translateX(0) }
+      100% { transform: translateY(110vh) translateX(20px) }
+    }
+    .snow{position:absolute; width:6px; height:6px; background:rgba(255,255,255,0.95); border-radius:999px; animation: fall linear infinite}
+    /* Topbar */
+    .topbar{
+      position:fixed; left:20px; right:20px; top:16px; z-index:40;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+    }
+    .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit}
+    .brand img{width:56px;height:56px;border-radius:999px;object-fit:cover; border:2px solid rgba(255,255,255,0.06)}
+    .brand .title{font-weight:700; font-size:20px; letter-spacing:0.4px}
+    .brand .title .logo-small{font-family:"Luckiest Guy"; font-size:22px; display:inline-block; margin-left:4px}
+
+    /* menu button */
+.menu-btn{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,0.08);
+  cursor:pointer;
+  color:#ffffff;
+  transition: transform .15s ease, color .25s ease, background .25s ease;
+}
+[data-theme="light"] .menu-btn{ color:#0b1220; background:rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.08); }
+.menu-btn:hover{ transform: scale(1.05) }
+
+    /* drawer */
+    .drawer-wrap{position:fixed; inset:0; z-index:50; pointer-events:none}
+    .drawer-backdrop{position:absolute; inset:0; background:rgba(2,6,23,0.45); opacity:0; transition:opacity .35s; pointer-events:none}
+    .drawer{position:fixed; left:0; top:0; height:100%; width:360px; max-width:85%; padding:22px;
+      transform:translateX(-110%); transition:transform 600ms cubic-bezier(.2,.9,.2,1);
+      backdrop-filter: blur(8px); border-right:1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      pointer-events:auto;
+      color:inherit;
+    }
+    [data-theme="light"] .drawer{ background: linear-gradient(180deg, rgba(10,20,30,0.03), rgba(255,255,255,0.9)); }
+
+    .drawer-wrap.open .drawer{ transform:translateX(0); transition-duration:2200ms; } /* slower open but reasonable */
+    .drawer-wrap.open .drawer-backdrop{ opacity:1; pointer-events:auto }
+
+    .drawer .close{position:absolute; right:12px; top:12px; width:36px;height:36px;border-radius:999px; display:grid;place-items:center; cursor:pointer}
+    .drawer nav a{display:flex; gap:10px; align-items:center; padding:10px;border-radius:8px; color:inherit; text-decoration:none; margin-bottom:6px}
+    .drawer nav a:hover{background:rgba(255,255,255,0.03)}
+
+    /* hero */
+    .hero {min-height:36vh; display:flex; align-items:center; justify-content:center; padding:92px 20px 40px 20px; background-size:cover; background-position:center}
+    .hero .card{max-width:980px; width:100%; padding:26px; border-radius:18px; background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)); text-align:center; backdrop-filter: blur(6px)}
+    [data-theme="light"] .hero .card{ background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9)); }
+
+    .hero h1{font-family:"Luckiest Guy"; font-size:38px; margin:0 0 8px; letter-spacing:1px}
+    .hero p{margin:0; opacity:0.95; font-size:16px}
+
+    /* content area *//* --- Make the main .content frame react to theme --- */
+.content{
+  /* ensure there is a visible border that can animate */
+  border: 1px solid rgba(255,255,255,0.06); /* dark default */
+  background: var(--card);
+  box-shadow: 0 12px 40px rgba(2,6,23,0.6);
+  transition: background .28s ease, border-color .28s ease, box-shadow .28s ease, color .28s ease;
+}
+
+/* lighten for light theme (covers html or body data-theme placement) */
+html[data-theme="light"] .content,
+body[data-theme="light"] .content,
+[data-theme="light"] .content {
+  border: 1px solid rgba(0,0,0,0.08);
+  background: var(--card); /* likely already light via variables */
+  box-shadow: 0 8px 30px rgba(2,6,23,0.06);
+  color: inherit;
+}
+
+/* explicit dark theme tweaks (optional) */
+html[data-theme="dark"] .content,
+body[data-theme="dark"] .content,
+[data-theme="dark"] .content {
+  border: 1px solid rgba(255,255,255,0.06);
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  box-shadow: 0 12px 40px rgba(2,6,23,0.6);
+  color: inherit;
+}
+
+
+    .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+    .video-card{border-radius:12px; overflow:hidden; background:rgba(0,0,0,0.04); color:inherit; text-decoration:none; display:block}
+    .video-card img{width:100%; height:160px; object-fit:cover; display:block}
+    .video-card .meta{padding:10px;font-size:14px}
+
+    /* list style for all episodes */
+    .episodes-list{ display:grid; gap:12px; margin-top:12px; }
+    .episode{
+      display:flex; gap:12px; align-items:center; padding:12px; border-radius:10px;
+      background: linear-gradient(90deg, rgba(0,0,0,0.03), rgba(255,255,255,0.02));
+      text-decoration:none; color:inherit;
+      border:1px solid rgba(0,0,0,0.03);
+    }
+    .episode img{width:160px; height:90px; object-fit:cover; border-radius:8px; flex-shrink:0}
+    .episode .meta { display:flex; flex-direction:column; gap:4px }
+    .episode .meta .title{font-weight:600}
+    .episode .meta .date{font-size:13px; color:var(--muted)}
+
+    .cta{display:inline-block;padding:12px 18px;border-radius:999px;font-weight:600;text-decoration:none}
+    .cta.gradient{ background: linear-gradient(90deg,var(--accent-1),var(--accent-2)); color:white }
+
+    /* sticky countdown */
+    .countdown{ position:fixed; right:18px; bottom:18px; z-index:60; width:220px; border-radius:14px; padding:12px;
+       background:linear-gradient(180deg,rgba(255,255,255,0.04), rgba(255,255,255,0.02)); backdrop-filter: blur(6px); border:1px solid rgba(255,255,255,0.06); text-align:center}
+    [data-theme="light"] .countdown{ background:rgba(0,0,0,0.04) }
+
+    .countdown .time{font-family:monospace; font-size:20px; margin-top:6px; transition:all .28s ease; }
+
+    /* footer */
+    footer{ text-align:center; color:var(--muted); padding:30px 12px; font-size:13px }
+
+    @media (max-width:900px){
+      .grid-3{ grid-template-columns:1fr; }
+      .brand .title{ display:none }
+      .episode img{ width:110px; height:70px }
+    }
+
+    .material-symbols-rounded{
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
+      font-size:22px;
+      line-height:1;
+    }
+    .drawer nav a{ display:flex; align-items:center; gap:12px; }
+    /* domyślnie dark */
+#episodes .episode {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+  border: 1px solid #333;
+}
+
+/* jasny motyw */
+[data-theme="light"] #episodes .episode {
+  background-color: #fff;
+  color: #111;
+  border: 1px solid #ccc;
+}
+
+/* dark motyw - jeśli chcesz podkreślić */
+[data-theme="dark"] #episodes .episode {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+  border: 1px solid #333;
+}
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- SNOW (decorative) -->
+  <div class="snow-wrap" aria-hidden="true">
+    <!-- generate a few snow dots -->
+    <div class="snow" style="left:5%; animation-duration:12s; animation-delay:0s"></div>
+    <div class="snow" style="left:20%; animation-duration:10s; animation-delay:2s"></div>
+    <div class="snow" style="left:35%; animation-duration:14s; animation-delay:1s"></div>
+    <div class="snow" style="left:50%; animation-duration:9s; animation-delay:3s"></div>
+    <div class="snow" style="left:65%; animation-duration:11s; animation-delay:0.5s"></div>
+    <div class="snow" style="left:80%; animation-duration:13s; animation-delay:2.3s"></div>
+  </div>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a id="home-link" class="brand" href="/" title="NyanHappi12 — Strona główna">
+      <img id="logo-img" src="https://nyanhappi12.github.io/site_files/Copilot_20251213_004258.png" alt="logo">
+      <div>
+        <div class="title">NyanHappi12 <span class="logo-small">☆</span></div>
+        <div style="font-size:11px; color:var(--muted); margin-top:4px">Oficjalna strona 2026 — Świąteczny motyw</div>
+      </div>
+    </a>
+
+    <div style="display:flex; gap:10px; align-items:center">
+      <button id="menu-open" class="menu-btn" aria-label="Otwórz menu" title="Menu">
+        <svg width="18" height="14" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- DRAWER -->
+  <div id="drawerWrap" class="drawer-wrap" aria-hidden="true">
+    <div id="drawerBackdrop" class="drawer-backdrop"></div>
+    <aside class="drawer" role="dialog" aria-modal="true" aria-label="Nawigacja">
+      <button id="drawerClose" class="close" aria-label="Zamknij"><strong>✕</strong></button>
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px">
+        <img id="drawer-logo" src="https://nyanhappi12.github.io/site_files/Copilot_20251213_004258.png" style="width:56px;height:56px;border-radius:999px;object-fit:cover">
+        <div>
+          <div style="font-weight:700">NyanHappi12</div>
+          <div style="font-size:12px;color:var(--muted)">Witaj! wybierz stronę</div>
+        </div>
+      </div>
+
+      <nav>
+        <a href="/filmy/"><span class="material-symbols-rounded">smart_display</span>Najnowsze Filmy</a>
+        <a href="/galeria/"><span class="material-symbols-rounded">photo_library</span>Galeria Obrazów</a>
+        <a href="/wydarzenia/"><span class="material-symbols-rounded">schedule</span>Odliczanie Do Wydarzeń</a>
+        <a href="/posty/"><span class="material-symbols-rounded">article</span>Posty</a>
+        <a id="account-link" href="/login/"><span class="material-symbols-rounded">account_circle</span>Konto</a>
+        <a href="/informacje-kontaktowe/"><span class="material-symbols-rounded">contact_mail</span>Informacje & Kontakt</a>
+      </nav>
+
+      <div style="margin-top:18px; font-size:13px; color:var(--muted)">Motyw:</div>
+      <div style="display:flex; gap:8px; margin-top:8px">
+        <button id="theme-light" class="cta" style="padding:8px 10px">Jasny</button>
+        <button id="theme-dark" class="cta" style="padding:8px 10px; background:linear-gradient(90deg,var(--accent-1),var(--accent-2)); color:#fff">Ciemny</button>
+      </div>
+
+      <div style="margin-top:14px; font-size:12px; color:var(--muted)">Motyw zapisany lokalnie; jeśli jesteś zalogowany, motyw zostanie zapisany do Firestore.</div>
+    </aside>
+  </div>
+
+  <!-- HERO -->
+  <main>
+    <section id="hero" class="hero" style="background-image:url('https://via.placeholder.com/1600x600?text=Świąteczny+baner')">
+      <div class="card">
+        <h1>Wszystkie odcinki — kanał Happi12</h1>
+        <p>Świąteczne wydanie listy — pełna lista odcinków z kanału. Przeglądaj, klikaj i oglądaj!</p>
+      </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <section class="content">
+      <h2 style="margin:0 0 12px">Wszystkie odcinki</h2>
+
+      <p style="margin:0 0 12px; color:var(--muted)">Poniżej znajduje się kompletna lista odcinków oparta na oficjalnej playlistie uploads kanału. Kliknij na odcinek, aby obejrzeć go na YouTube.</p>
+
+      <div id="episodes" class="episodes-list" aria-live="polite">
+        <!-- wszystkie odcinki będą tutaj wstawione przez skrypt -->
+        <div style="grid-column:1/-1;padding:20px;color:var(--muted)">Ładowanie listy odcinków...</div>
+      </div>
+
+      <div style="margin-top:18px; display:flex; gap:10px; align-items:center">
+        <a href="/index.html" class="cta">Wróć do strony głównej</a>
+        <a id="load-more-btn" class="cta gradient" style="display:none">Pokaż więcej</a>
+      </div>
+    </section>
+
+    <footer>
+      <div>© 2026 NyanHappi12 — wszelkie prawa zastrzeżone. Prosimy nie kopiować i nie próbować wyciągać kodu z źródła strony. Dziękuję — NyanHappi12</div>
+      <div style="margin-top:6px; font-size:12px">Motyw: <span id="footer-theme">ciemny</span></div>
+    </footer>
+  </main>
+
+  <!-- STICKY COUNTDOWN bottom-right -->
+  <div id="countdown" class="countdown" role="status" aria-live="polite">
+    <div style="font-size:12px; font-weight:600">Do następnego odcinka zostało:</div>
+    <div id="countdown-value" class="time">Wczytywanie...</div>
+  </div>
+
+  <!-- SCRIPTS - Firebase + App logic (kopiowane z głównego index) -->
+ <script type="module">
+/* ---------- CONFIG + IMPORTS ---------- */
+const CONFIG = {
+  CLOUDINARY: { cloudName: '226846279479333', unsignedPreset: 'NyanHappi' },
+  FIREBASE: {
+    apiKey: "AIzaSyA6B1a0I1m7hXPwblW8diKsW1nnDVmGEP0",
+    authDomain: "nyanhappi12.firebaseapp.com",
+    projectId: "nyanhappi12",
+    storageBucket: "nyanhappi12.firebasestorage.app",
+    messagingSenderId: "197042141276",
+    appId: "1:197042141276:web:d9f1c73f569f9180a40e99",
+    measurementId: "G-RW1PDZR1X5"
+  },
+  // YouTube API key (używamy klucza, który był na stronie głównej)
+  YOUTUBE: {
+    API_KEY: "AIzaSyCrdS7Sou5-VsrHTZAgsPA3SSCJP8qHrQk",
+    HANDLE: "@nyanhappi12_cute"
+  }
+};
+
+// Firebase (modular imports)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseApp = initializeApp(CONFIG.FIREBASE);
+try { getAnalytics(firebaseApp); } catch(e) { /* optional */ }
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
+
+/* ---------- DOM refs (safe) ---------- */
+const drawerWrap = document.getElementById('drawerWrap');
+const menuOpen = document.getElementById('menu-open');
+const drawerClose = document.getElementById('drawerClose');
+const drawerBackdrop = document.getElementById('drawerBackdrop');
+const accountLink = document.getElementById('account-link');
+const logoImg = document.getElementById('logo-img');
+const drawerLogo = document.getElementById('drawer-logo');
+const hero = document.getElementById('hero');
+const episodesContainer = document.getElementById('episodes');
+const footerTheme = document.getElementById('footer-theme');
+const themeLightBtn = document.getElementById('theme-light');
+const themeDarkBtn = document.getElementById('theme-dark');
+const loadMoreBtn = document.getElementById('load-more-btn');
+const countdownEl = document.getElementById('countdown-value');
+
+/* ---------- placeholders ---------- */
+const defaultLogo = 'https://nyanhappi12.github.io/site_files/Copilot_20251213_004258.png';
+const defaultHero = 'https://nyanhappi12.github.io/site_files/Copilot_20251213_004258.png?text=Świąteczny+baner';
+if(logoImg) logoImg.src = defaultLogo;
+if(drawerLogo) drawerLogo.src = defaultLogo;
+if(hero) hero.style.backgroundImage = `url('${defaultHero}')`;
+
+/* ---------- THEME (applied to <body>) ---------- */
+/* ---------- THEME FIX: ustaw na <html> i <body> ---------- */
+const THEME_KEY = 'nh_theme';
+
+function applyTheme(theme, persistToFirestore = true){
+  const t = theme === 'light' ? 'light' : 'dark';
+  // ustaw na <html> i <body> — to zapewni, że wszystkie selektory CSS zadziałają
+  try { document.documentElement.setAttribute('data-theme', t); } catch(e){ /* ignore */ }
+  try { document.body.setAttribute('data-theme', t); } catch(e){ /* ignore */ }
+
+  if(footerTheme) footerTheme.textContent = t === 'light' ? 'jasny' : 'ciemny';
+  try { localStorage.setItem(THEME_KEY, t); } catch(e){ /* ignore */ }
+
+  // jeśli jest zalogowany użytkownik i chcemy zapisać do Firestore
+  if(persistToFirestore && accountDoc && accountDoc.id){
+    try{
+      const ref = doc(db, 'accounts', accountDoc.id);
+      // użyj setDoc z merge, aby nie nadpisać innych pól
+      setDoc(ref, { theme: t }, { merge: true }).catch(()=>{/* ignore write errors */});
+    }catch(e){ /* ignore */ }
+  }
+}
+
+// inicjalizacja motywu (zapisany w localStorage)
+const savedTheme = (()=>{ try{ return localStorage.getItem(THEME_KEY) } catch(e){ return null } })() || 'dark';
+applyTheme(savedTheme, false);
+
+// hooki przycisków
+if(themeLightBtn) themeLightBtn.onclick = ()=>applyTheme('light');
+if(themeDarkBtn) themeDarkBtn.onclick = ()=>applyTheme('dark');
+
+/* ---------- DRAWER ---------- */
+function openDrawer(){ drawerWrap?.classList.add('open'); drawerWrap?.setAttribute('aria-hidden','false'); }
+function closeDrawer(){ drawerWrap?.classList.remove('open'); drawerWrap?.setAttribute('aria-hidden','true'); }
+menuOpen?.addEventListener('click', openDrawer);
+drawerClose?.addEventListener('click', closeDrawer);
+drawerBackdrop?.addEventListener('click', closeDrawer);
+
+/* ---------- AUTH handlers (accountLink) ---------- */
+let accountDoc = null;
+onAuthStateChanged(auth, async (user) => {
+  if(user){
+    const docRef = doc(db, 'accounts', user.uid);
+    try{
+      const snap = await getDoc(docRef);
+      if(!snap.exists()){
+        await setDoc(docRef, { display_name: user.displayName || user.email || 'Użytkownik', createdAt: new Date().toISOString() });
+        accountDoc = { display_name: user.displayName || user.email || 'Użytkownik', id: user.uid };
+      } else {
+        accountDoc = { id: snap.id, ...snap.data() };
+      }
+      if(accountLink){
+        accountLink.innerHTML = `<span class="material-symbols-rounded">account_circle</span>${accountDoc.display_name || 'Konto'}`;
+        accountLink.href = `/konto/${accountDoc.id}`;
+      }
+      // persist theme from Firestore if available
+      try{
+        if(accountDoc && accountDoc.theme){
+          applyTheme(accountDoc.theme, false);
+        }
+      }catch(e){}
+      // add session id to URL
+      try{
+        const u = new URL(window.location.href);
+        u.searchParams.set('session_id', accountDoc.id);
+        window.history.replaceState({}, '', u.toString());
+      }catch(e){}
+    }catch(e){ console.error(e) }
+  } else {
+    accountDoc = null;
+    if(accountLink){ accountLink.innerHTML = `<span class="material-symbols-rounded">account_circle</span>Konto`; accountLink.href = '/login/'; }
+    try{
+      const u = new URL(window.location.href);
+      u.searchParams.delete('session_id');
+      window.history.replaceState({}, '', u.toString());
+    }catch(e){}
+  }
+});
+
+// click: if not logged - open google popup, else go to profile
+accountLink?.addEventListener('click', async (e) => {
+  const user = auth.currentUser;
+  if(!user){
+    e.preventDefault();
+    const provider = new GoogleAuthProvider();
+    try{ await signInWithPopup(auth, provider); } catch(err){ alert('Błąd logowania: ' + (err && err.message || err)); }
+  } else {
+    // let default anchor work (navigates to /konto/{id})
+  }
+});
+accountLink?.addEventListener('contextmenu', async (ev) => {
+  ev.preventDefault();
+  if(confirm('Wylogować?')){ await signOut(auth); alert('Wylogowano'); }
+});
+
+/* ---------- Cloudinary helper (kept) ---------- */
+async function uploadToCloudinary(file){
+  const url = `https://api.cloudinary.com/v1_1/${CONFIG.CLOUDINARY.cloudName}/upload`;
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CONFIG.CLOUDINARY.unsignedPreset);
+  const resp = await fetch(url, { method:'POST', body:fd });
+  if(!resp.ok) throw new Error('Upload failed');
+  return resp.json();
+}
+
+/* ---------- YOUTUBE FULL-LIST LOGIC (robust) ---------- */
+(async function youtubeFullList(){
+  const API_KEY = (CONFIG && CONFIG.YOUTUBE && CONFIG.YOUTUBE.API_KEY && !CONFIG.YOUTUBE.API_KEY.startsWith('REPLACE')) ? CONFIG.YOUTUBE.API_KEY : null;
+  const HANDLE = (CONFIG && CONFIG.YOUTUBE && CONFIG.YOUTUBE.HANDLE) ? CONFIG.YOUTUBE.HANDLE : '@nyanhappi12_cute';
+  const MAX_PER_REQUEST = 50;
+  const SAFE_CAP = 500;
+
+  function escapeHtml(s){ return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
+  function showMsg(html){ if(episodesContainer) episodesContainer.innerHTML = `<div style="grid-column:1/-1;padding:12px;color:var(--muted)">${html}</div>`; }
+
+  async function safeFetchJson(url){
+    try{
+      const r = await fetch(url);
+      const json = await r.json().catch(()=>null);
+      return { ok: r.ok, status: r.status, json };
+    }catch(e){ return { ok:false, status:0, json:null, error:e }; }
+  }
+
+  async function resolveChannelId(handle){
+    if(!API_KEY){ console.warn('YT API key missing'); return null; }
+    const plain = (handle||'').replace(/^@/,'');
+    // channels.forHandle
+    try{
+      const url = `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=${encodeURIComponent(plain)}&key=${API_KEY}`;
+      const r = await safeFetchJson(url);
+      console.log('YT channels.forHandle', r.status, r.json);
+      if(r.json && Array.isArray(r.json.items) && r.json.items.length) return r.json.items[0].id;
+    }catch(e){ console.warn(e); }
+    // fallback search
+    try{
+      const sUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&q=${encodeURIComponent(plain)}&key=${API_KEY}`;
+      const r2 = await safeFetchJson(sUrl);
+      console.log('YT search fallback', r2.status, r2.json);
+      if(r2.json && Array.isArray(r2.json.items) && r2.json.items.length){
+        return r2.json.items[0].snippet?.channelId || r2.json.items[0].id?.channelId || null;
+      }
+    }catch(e){ console.warn(e); }
+    return null;
+  }
+
+  async function getUploadsPlaylist(channelId){
+    try{
+      const url = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${encodeURIComponent(channelId)}&key=${API_KEY}`;
+      const r = await safeFetchJson(url);
+      console.log('YT contentDetails', r.status, r.json);
+      if(r.json && Array.isArray(r.json.items) && r.json.items.length){
+        return r.json.items[0].contentDetails?.relatedPlaylists?.uploads || null;
+      }
+    }catch(e){ console.warn(e) }
+    return null;
+  }
+
+  async function fetchAllPlaylistItems(playlistId, cap = SAFE_CAP){
+    if(!playlistId) return [];
+    let items = [];
+    let pageToken = '';
+    try{
+      do {
+        const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${encodeURIComponent(playlistId)}&maxResults=${MAX_PER_REQUEST}${pageToken?('&pageToken='+encodeURIComponent(pageToken)) : ''}&key=${API_KEY}`;
+        const r = await safeFetchJson(url);
+        console.log('YT playlistItems', r.status, r.json);
+        if(!r.json || r.json.error){ console.error('YT playlistItems error', r.json && r.json.error); break; }
+        if(Array.isArray(r.json.items)){
+          r.json.items.forEach(it=>{
+            if(it.snippet && it.snippet.resourceId && it.snippet.resourceId.videoId){
+              items.push({
+                id: it.snippet.resourceId.videoId,
+                title: it.snippet.title,
+                thumb: it.snippet.thumbnails?.medium?.url || it.snippet.thumbnails?.high?.url || it.snippet.thumbnails?.default?.url || '',
+                publishedAt: it.snippet.publishedAt
+              });
+            }
+          });
+        }
+        pageToken = r.json.nextPageToken || '';
+        if(items.length >= cap) break;
+      } while(pageToken);
+    }catch(e){ console.error('fetchAllPlaylistItems failed', e); }
+    return items.slice(0,cap);
+  }
+
+  // orchestrator
+  if(!episodesContainer){
+    console.warn('YT: #episodes not found');
+    return;
+  }
+  showMsg('Ładowanie pełnej listy odcinków...');
+  if(!API_KEY){
+    showMsg('Brak ustawionego klucza YouTube API. Wstaw klucz do CONFIG.YOUTUBE.API_KEY.');
+    return;
+  }
+  const channelId = await resolveChannelId(HANDLE);
+  if(!channelId){
+    showMsg(`Nie znaleziono kanału dla handle <strong>${escapeHtml(HANDLE)}</strong>. Sprawdź ustawienia klucza API i referrera.`);
+    return;
+  }
+  const uploads = await getUploadsPlaylist(channelId);
+  if(!uploads){
+    showMsg('Nie udało się pobrać playlisty uploads dla kanału. Sprawdź uprawnienia API.');
+    return;
+  }
+  const all = await fetchAllPlaylistItems(uploads);
+  if(!all.length){
+    showMsg('Brak odcinków do wyświetlenia lub API zwróciło pustą odpowiedź.');
+    return;
+  }
+  // render
+  episodesContainer.innerHTML = '';
+  all.forEach(ep => {
+    const a = document.createElement('a');
+    a.className = 'episode';
+    a.href = `https://www.youtube.com/watch?v=${ep.id}`;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.innerHTML = `
+      <img src="${ep.thumb}" alt="${escapeHtml(ep.title)}" onerror="this.onerror=null;this.src='https://via.placeholder.com/480x270?text=No+thumb'">
+      <div class="meta">
+        <div class="title">${escapeHtml(ep.title)}</div>
+        <div class="date">${ep.publishedAt ? (new Date(ep.publishedAt)).toLocaleString() : ''}</div>
+      </div>
+    `;
+    episodesContainer.appendChild(a);
+  });
+  if(all.length >= SAFE_CAP && loadMoreBtn) {
+    loadMoreBtn.style.display = 'inline-block';
+    loadMoreBtn.onclick = ()=> alert('Lista osiągnęła limit pobierania (SAFE_CAP). Zmień SAFE_CAP w skrypcie aby pobrać więcej.');
+  }
+})();
+
+/* ---------- COUNTDOWN (daily 21:00 CET/CEST) ---------- */
+const EPISODE_ANCHOR = new Date('2026-06-01T21:00:00+02:00').getTime();
+const STEP = 72 * 60 * 60 * 1000; // 72h
+
+function getNextEpisodeTime() {
+  const now = Date.now();
+  const next = EPISODE_ANCHOR + Math.ceil((now - EPISODE_ANCHOR) / STEP) * STEP;
+  return new Date(next);
+}
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function updateCountdown() {
+  const el = document.getElementById('countdown-value');
+  if (!el) return;
+
+  const now = new Date();
+  const target = getNextEpisodeTime();
+
+  const diff = Math.max(0, target - now);
+  const s = Math.floor(diff / 1000) % 60;
+  const m = Math.floor(diff / 60000) % 60;
+  const h = Math.floor(diff / 3600000) % 24;
+  const d = Math.floor(diff / (24 * 3600000));
+
+  const out = (d ? (d + 'd ') : '') + `${pad(h)}:${pad(m)}:${pad(s)}`;
+
+  el.style.transform = 'translateY(-6px) scale(0.99)';
+  el.style.opacity = '0.85';
+  setTimeout(() => {
+    el.textContent = out;
+    el.style.transform = 'translateY(0) scale(1)';
+    el.style.opacity = '1';
+  }, 120);
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+</script>
+</body>
+</html>
