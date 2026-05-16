@@ -1,0 +1,462 @@
+<!doctype html>
+
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NyanHappi12 — Informacje & Kontakt (2026)</title>  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet"> <link rel="icon" type="image/png" href="https://nyanhappi12.github.io/site_files/NyanHappi12_icon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">  <style>
+    :root{
+  --bg:#616263;
+  --text:#ffffff;
+  --card:rgba(30,35,45,0.88);
+  --muted:#9aa4b2;
+
+  --glass:rgba(255,255,255,0.06);
+  --accent-1:#ff6fb5;
+  --accent-2:#7c4dff;
+}
+
+[data-theme="light"]{
+  --bg:#f6f9fc;
+  --text:#0b1220;
+  --card:#ffffff;
+  --muted:#55606a;
+
+  --glass:rgba(0,0,0,0.05);
+}
+    html,body{height:100%}
+    body{
+      margin:0;font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background: linear-gradient(180deg,#0b1220 0%, #071025 100%); color:#fff;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    [data-theme="light"] body{
+      background: linear-gradient(180deg,#f8fafc 0%, #ffffff 100%);
+      color:#0b1220;
+    }
+
+    .topbar{
+      position:fixed; left:20px; right:20px; top:16px; z-index:40;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit}
+    .brand img{width:56px;height:56px;border-radius:999px;object-fit:cover;border:2px solid rgba(255,255,255,0.06)}
+    .brand .title{font-weight:700;font-size:20px;letter-spacing:.4px}
+    .brand .title .logo-small{font-family:"Luckiest Guy"; font-size:22px; display:inline-block; margin-left:4px}
+
+    .menu-btn{
+      width:48px;height:48px;display:grid;place-items:center;border-radius:999px;
+      background:rgba(255,255,255,0.08);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.08);
+      cursor:pointer;color:#fff;transition:transform .15s ease,color .25s,background .25s;
+    }
+    [data-theme="light"] .menu-btn{ color:#0b1220; background:rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.08) }
+    .menu-btn:hover{ transform:scale(1.05) }
+
+    .drawer-wrap{position:fixed;inset:0;z-index:60;pointer-events:none}
+    .drawer-backdrop{position:absolute;inset:0;background:rgba(2,6,23,0.45);opacity:0;transition:opacity 420ms ease;pointer-events:none}
+    .drawer{position:fixed;left:0;top:0;height:100%;width:360px;max-width:85%;padding:22px;
+      transform:translateX(-110%);transition:transform 420ms cubic-bezier(.2,.9,.2,1),opacity 300ms ease;
+      backdrop-filter: blur(8px);border-right:1px solid rgba(255,255,255,0.04);
+      background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));pointer-events:auto;color:inherit;
+    }
+    [data-theme="light"] .drawer{ background: linear-gradient(180deg, rgba(10,20,30,0.03), rgba(255,255,255,0.95)); }
+    .drawer-wrap.open .drawer{ transform:translateX(0); opacity:1; }
+    .drawer-wrap.open .drawer-backdrop{ opacity:1; pointer-events:auto }
+    .drawer nav a{display:flex;gap:10px;align-items:center;padding:10px;border-radius:8px;color:inherit;text-decoration:none;margin-bottom:6px}
+    .drawer nav a:hover{background:rgba(255,255,255,0.03)}
+    .drawer nav a{display:flex;align-items:center;gap:12px}
+
+    .hero{
+      min-height:36vh;display:flex;align-items:center;justify-content:center;
+      padding:92px 20px 40px 20px;background-size:cover;background-position:center
+    }
+    .hero .card{
+      max-width:980px;width:100%;padding:26px;border-radius:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      text-align:center;backdrop-filter: blur(6px)
+    }
+    [data-theme="light"] .hero .card{ background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9)); }
+    .hero h1{font-family:"Luckiest Guy";font-size:40px;margin:0 0 8px;letter-spacing:1px}
+    .hero p{margin:0;opacity:.95;font-size:16px}
+
+    .content{
+  max-width:1100px;
+  margin:-36px auto 80px;
+  background: var(--card);
+  border-radius:20px;
+  padding:28px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  color: var(--text);
+}
+
+    .grid{display:grid; grid-template-columns: 1.1fr 0.9fr; gap:18px; align-items:start}
+    @media (max-width:920px){ .grid{grid-template-columns:1fr} .brand .title{display:none} }
+
+    .panel{border-radius:16px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.05)}
+    .section-title{margin:0 0 12px;font-size:22px}
+    .muted{color:var(--muted)}
+
+    .info-list{display:grid; gap:10px; margin-top:10px}
+    .info-item{padding:12px 14px; border-radius:14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05)}
+    .info-item strong{display:block; margin-bottom:4px}
+
+    .contact-card{display:grid; gap:12px}
+    .contact-line{display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05)}
+    .contact-line .label{font-size:13px; color:var(--muted)}
+    .contact-line .value{font-weight:600}
+    .discord-badge{display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:999px; background:linear-gradient(90deg, var(--accent-1), var(--accent-2)); color:#fff; text-decoration:none; font-weight:600; width:max-content}
+
+    .cta{display:inline-flex; align-items:center; gap:8px; padding:12px 18px; border-radius:999px; font-weight:600; text-decoration:none; border:1px solid rgba(255,255,255,0.06); background:transparent; color:inherit; cursor:pointer; transition:all .22s ease}
+    .cta.gradient{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:white;border:0}
+
+    .countdown{ position:fixed; right:18px; bottom:18px; z-index:60; width:220px; border-radius:14px; padding:12px; background:rgba(255,255,255,0.07); backdrop-filter: blur(6px); border:1px solid rgba(255,255,255,0.06); text-align:center }
+    [data-theme="light"] .countdown{ background:rgba(0,0,0,0.04) }
+    .countdown .time{font-family:monospace;font-size:20px;margin-top:6px;transition:all .28s ease}
+
+    footer{text-align:center;color:var(--muted);padding:30px 12px;font-size:13px}
+    .material-symbols-rounded{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;font-size:22px;line-height:1}
+  </style></head>
+<body data-theme="dark">
+  <header class="topbar">
+    <a id="home-link" class="brand" href="/index.html" title="NyanHappi12 — Strona główna">
+      <img id="logo-img" src="https://nyanhappi12.github.io/site_files/Copilot_20251213_004258.png" alt="logo">
+      <div>
+        <div class="title">NyanHappi12 <span class="logo-small">☆</span></div>
+        <div style="font-size:11px; color:var(--muted); margin-top:4px">Informacje & Kontakt</div>
+      </div>
+    </a>
+    <div style="display:flex; gap:10px; align-items:center">
+      <button id="menu-open" class="menu-btn" aria-label="Otwórz menu" title="Menu">
+        <svg width="18" height="14" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>  <div id="drawerWrap" class="drawer-wrap" aria-hidden="true">
+    <div id="drawerBackdrop" class="drawer-backdrop"></div>
+    <aside class="drawer" role="dialog" aria-modal="true" aria-label="Nawigacja">
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px">
+        <img id="drawer-logo" src="https://nyanhappi12.github.io/site_files/Copilot_20251213_004258.png" style="width:56px;height:56px;border-radius:999px;object-fit:cover">
+        <div>
+          <div style="font-weight:700">NyanHappi12</div>
+          <div style="font-size:12px;color:var(--muted)">Witaj! wybierz stronę</div>
+        </div>
+      </div>
+      <nav>
+        <a href="/filmy/"><span class="material-symbols-rounded">smart_display</span>Najnowsze Filmy</a>
+        <a href="/galeria/"><span class="material-symbols-rounded">photo_library</span>Galeria Obrazów</a>
+        <a href="/wydarzenia/"><span class="material-symbols-rounded">schedule</span>Odliczanie Do Wydarzeń</a>
+        <a href="/posty/"><span class="material-symbols-rounded">article</span>Posty</a>
+        <a id="account-link" href="/login/"><span class="material-symbols-rounded">account_circle</span>Konto</a>
+        <a href="/informacje-kontaktowe/"><span class="material-symbols-rounded">contact_mail</span>Informacje & Kontakt</a>
+      </nav>
+      <div style="margin-top:18px; font-size:13px; color:var(--muted)">Motyw:</div>
+      <div style="display:flex; gap:8px; margin-top:8px">
+        <button id="theme-light" class="cta" style="padding:8px 10px">Jasny</button>
+        <button id="theme-dark" class="cta gradient" style="padding:8px 10px">Ciemny</button>
+      </div>
+      <div style="margin-top:14px; font-size:12px; color:var(--muted)">Motyw zapisany lokalnie; jeśli jesteś zalogowany, zostanie zapisany do Firestore.</div>
+    </aside>
+  </div>  <main>
+    <section id="hero" class="hero" style="background-image:url('https://via.placeholder.com/1600x600?text=Informacje+%26+Kontakt')">
+      <div class="card">
+        <h1>Informacje o stronie</h1>
+        <p>Tu znajdziesz krótki opis projektu oraz kontakt do NyanHappi12 przez Discord.</p>
+      </div>
+    </section><section class="content">
+  <div class="grid">
+    <div class="panel">
+      <h2 class="section-title">O mojej stronie</h2>
+      <p class="muted" style="margin-top:0; line-height:1.7">
+        NyanHappi12 to moja strona internetowa z 2026 roku. Znajdziesz tu filmy, galerię obrazów, posty, odliczanie do wydarzeń oraz profile kont. Strona ma jasny i ciemny motyw, zapis sesji oraz styl inspirowany nowoczesnym UI z animacjami.
+      </p>
+
+      <div class="info-list">
+        <div class="info-item">
+          <strong>Filmy</strong>
+          <span class="muted">Najnowsze odcinki i lista wszystkich filmów.</span>
+        </div>
+        <div class="info-item">
+          <strong>Galeria</strong>
+          <span class="muted">Obrazy z podglądem, szczegółami i stronami pojedynczych grafik.</span>
+        </div>
+        <div class="info-item">
+          <strong>Posty</strong>
+          <span class="muted">Wpisy społeczności z komentarzami, lajkami i edycją dla autora.</span>
+        </div>
+      </div>
+    </div>
+
+    <aside class="panel contact-card">
+      <h2 class="section-title">Kontakt przez Discord</h2>
+      <div class="contact-line">
+        <span class="material-symbols-rounded">discord</span>
+        <div>
+          <div class="label">Nazwa na Discordzie</div>
+          <div class="value">Happi12 / NyanHappi12</div>
+        </div>
+      </div>
+
+      <div class="contact-line">
+        <span class="material-symbols-rounded">link</span>
+        <div>
+          <div class="label">Link kontaktowy</div>
+          <div class="value"><a href="https://discord.gg/839sABVHqC" target="_blank" rel="noopener" style="color:inherit; text-decoration:none">Otwórz Discord</a></div>
+        </div>
+      </div>
+
+      <a class="discord-badge" href="https://discord.gg/839sABVHqC" target="_blank" rel="noopener">
+        <span class="material-symbols-rounded">send</span>
+        Napisz na Discordzie
+      </a>
+
+      <div class="muted" style="font-size:13px; line-height:1.6">
+        Jeżeli masz do mnie wiadomość, możesz napisać przez Discord.
+      </div>
+    </aside>
+  </div>
+
+  <div style="margin-top:18px">
+    <a href="/" class="cta">Wróć do strony głównej</a>
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 NyanHappi12 — wszelkie prawa zastrzeżone.</div>
+  <div style="margin-top:6px;font-size:12px">Motyw: <span id="footer-theme">ciemny</span></div>
+</footer>
+
+  </main>  <div id="countdown" class="countdown" role="status" aria-live="polite">
+    <div style="font-size:12px;font-weight:600">Do następnego odcinka zostało:</div>
+    <div id="countdown-value" class="time">Wczytywanie...</div>
+  </div>  <script type="module">
+    const CONFIG = {
+      FIREBASE: {
+        apiKey: "AIzaSyA6B1a0I1m7hXPwblW8diKsW1nnDVmGEP0",
+        authDomain: "nyanhappi12.firebaseapp.com",
+        projectId: "nyanhappi12",
+        storageBucket: "nyanhappi12.firebasestorage.app",
+        messagingSenderId: "197042141276",
+        appId: "1:197042141276:web:d9f1c73f569f9180a40e99",
+        measurementId: "G-RW1PDZR1X5"
+      }
+    };
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    const app = initializeApp(CONFIG.FIREBASE);
+    try { getAnalytics(app); } catch (e) {}
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    const drawerWrap = document.getElementById('drawerWrap');
+    const menuOpen = document.getElementById('menu-open');
+    const drawerClose = document.getElementById('drawerClose');
+    const drawerBackdrop = document.getElementById('drawerBackdrop');
+    const accountLink = document.getElementById('account-link');
+    const footerTheme = document.getElementById('footer-theme');
+    const themeLightBtn = document.getElementById('theme-light');
+    const themeDarkBtn = document.getElementById('theme-dark');
+    const countdownValue = document.getElementById('countdown-value');
+    const homeLink = document.getElementById('home-link');
+    const logoImg = document.getElementById('logo-img');
+    const drawerLogo = document.getElementById('drawer-logo');
+    const hero = document.getElementById('hero');
+    const THEME_KEY = 'nh_theme';
+    const SESSION_KEY = 'nh_session_id';
+    let accountDoc = null;
+
+    function applyTheme(theme, persistToFirestore = true) {
+      const t = theme === 'light' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+      document.body.setAttribute('data-theme', t);
+      if (footerTheme) footerTheme.textContent = t === 'light' ? 'jasny' : 'ciemny';
+      try { localStorage.setItem(THEME_KEY, t); } catch (e) {}
+      if (persistToFirestore && accountDoc && accountDoc.id) {
+        setDoc(doc(db, 'accounts', accountDoc.id), { theme: t }, { merge: true }).catch(() => {});
+      }
+    }
+
+    const EPISODE_ANCHOR = new Date('2026-06-01T21:00:00+02:00').getTime();
+const STEP = 72 * 60 * 60 * 1000; // 72h
+
+function getNextEpisodeTime() {
+  const now = Date.now();
+  const next = EPISODE_ANCHOR + Math.ceil((now - EPISODE_ANCHOR) / STEP) * STEP;
+  return new Date(next);
+}
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function updateCountdown() {
+  const el = document.getElementById('countdown-value');
+  if (!el) return;
+
+  const now = new Date();
+  const target = getNextEpisodeTime();
+
+  const diff = Math.max(0, target - now);
+  const s = Math.floor(diff / 1000) % 60;
+  const m = Math.floor(diff / 60000) % 60;
+  const h = Math.floor(diff / 3600000) % 24;
+  const d = Math.floor(diff / (24 * 3600000));
+
+  const out = (d ? (d + 'd ') : '') + `${pad(h)}:${pad(m)}:${pad(s)}`;
+
+  el.style.transform = 'translateY(-6px) scale(0.99)';
+  el.style.opacity = '0.85';
+  setTimeout(() => {
+    el.textContent = out;
+    el.style.transform = 'translateY(0) scale(1)';
+    el.style.opacity = '1';
+  }, 120);
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+    function removeGlobalDrawerListeners() {
+      document.removeEventListener('pointerdown', outsideDrawerHandler);
+      document.removeEventListener('touchstart', outsideDrawerHandler);
+      document.removeEventListener('keydown', escCloseHandler);
+    }
+
+    function closeDrawer() {
+      if (!drawerWrap) return;
+      drawerWrap.classList.remove('open');
+      const drawerEl = drawerWrap.querySelector('.drawer');
+      let cleaned = false;
+      function cleanUpAfterClose() {
+        if (cleaned) return;
+        cleaned = true;
+        drawerWrap.setAttribute('aria-hidden', 'true');
+        removeGlobalDrawerListeners();
+        if (drawerEl) drawerEl.removeEventListener('transitionend', onTransitionEnd);
+      }
+      function onTransitionEnd(e) { if (e.target === drawerEl) cleanUpAfterClose(); }
+      if (drawerEl) drawerEl.addEventListener('transitionend', onTransitionEnd);
+      setTimeout(cleanUpAfterClose, 700);
+    }
+
+    function openDrawer() {
+      if (!drawerWrap) return;
+      drawerWrap.classList.add('open');
+      drawerWrap.setAttribute('aria-hidden', 'false');
+      setTimeout(() => {
+        document.addEventListener('pointerdown', outsideDrawerHandler);
+        document.addEventListener('touchstart', outsideDrawerHandler, { passive: true });
+        document.addEventListener('keydown', escCloseHandler);
+      }, 0);
+    }
+
+    function escCloseHandler(e) {
+      if (e.key === 'Escape' || e.key === 'Esc') closeDrawer();
+    }
+
+    function outsideDrawerHandler(e) {
+      if (!drawerWrap || !drawerWrap.classList.contains('open')) return;
+      const drawerEl = drawerWrap.querySelector('.drawer');
+      const path = e.composedPath ? e.composedPath() : (e.path || []);
+      const target = path && path.length ? path[0] : e.target;
+      if (drawerEl && drawerEl.contains(target)) return;
+      if (menuOpen && menuOpen.contains(target)) return;
+      closeDrawer();
+    }
+
+    async function loadAccountById(uid) {
+      if (!uid) return null;
+      const ref = doc(db, 'accounts', uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return null;
+      return { id: snap.id, ...snap.data() };
+    }
+
+    async function ensureAccountDocForUser(user) {
+      const ref = doc(db, 'accounts', user.uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        const nickFromEmail = user.email ? user.email.split('@')[0] : null;
+        const created = {
+          display_name: user.displayName || nickFromEmail || 'Użytkownik',
+          email: user.email || null,
+          createdAt: new Date().toISOString()
+        };
+        await setDoc(ref, created);
+        return { id: user.uid, ...created };
+      }
+      return { id: snap.id, ...snap.data() };
+    }
+
+    function updateAccountLink() {
+      if (!accountLink) return;
+      if (accountDoc?.id) {
+        accountLink.innerHTML = `<span class="material-symbols-rounded">account_circle</span>${accountDoc.display_name || 'Konto'}`;
+        accountLink.href = `/konto/?sessionid=${encodeURIComponent(accountDoc.id)}&profileid=${encodeURIComponent(accountDoc.id)}`;
+      } else {
+        accountLink.innerHTML = `<span class="material-symbols-rounded">account_circle</span>Konto`;
+        accountLink.href = '/login/';
+      }
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        accountDoc = await ensureAccountDocForUser(user);
+        updateAccountLink();
+        try { if (accountDoc && accountDoc.theme) applyTheme(accountDoc.theme, false); } catch (e) {}
+        try { const u = new URL(window.location.href); u.searchParams.set('sessionid', accountDoc.id); u.searchParams.set('session_id', accountDoc.id); window.history.replaceState({}, '', u.toString()); } catch (e) {}
+      } else {
+        accountDoc = null;
+        updateAccountLink();
+        try { const u = new URL(window.location.href); u.searchParams.delete('sessionid'); u.searchParams.delete('session_id'); window.history.replaceState({}, '', u.toString()); } catch (e) {}
+      }
+    });
+
+    accountLink?.addEventListener('click', async (e) => {
+  if(accountDoc?.id){
+    e.preventDefault();
+
+    window.location.href =
+      `/konto/?sessionid=${encodeURIComponent(accountDoc.id)}&profileid=${encodeURIComponent(accountDoc.id)}`;
+
+    return;
+  }
+
+  try{
+    e.preventDefault();
+    await signInWithPopup(auth, provider);
+  }catch(err){
+    console.error(err);
+
+    // fallback
+    window.location.href = '/login/';
+  }
+});
+    accountLink?.addEventListener('contextmenu', async (ev) => {
+      ev.preventDefault();
+      if (confirm('Wylogować?')) {
+        await signOut(auth);
+        try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+        alert('Wylogowano');
+      }
+    });
+
+    if (themeLightBtn) themeLightBtn.onclick = () => applyTheme('light');
+    if (themeDarkBtn) themeDarkBtn.onclick = () => applyTheme('dark');
+    applyTheme(localStorage.getItem(THEME_KEY) || 'dark', false);
+
+    menuOpen?.addEventListener('click', (ev) => { ev.stopPropagation(); openDrawer(); });
+    drawerClose?.addEventListener('click', (ev) => { ev.stopPropagation(); closeDrawer(); });
+    drawerBackdrop?.addEventListener('click', (ev) => { ev.stopPropagation(); closeDrawer(); });
+
+
+    document.getElementById('home-link')?.addEventListener('dblclick', () => {
+      const l = prompt('https://nyanhappi12.github.io/site_files/Copilot_20251213_004258.png', logoImg.src);
+      if (l !== null) { logoImg.src = l || defaultLogo; drawerLogo.src = l || defaultLogo; }
+      const h = prompt('https://nyanhappi12.github.io/site_files/Copilot_20251213_004258.png', hero.style.backgroundImage.replace(/^url['"]?/, '').replace(/['"]?$/, ''));
+      if (h !== null) hero.style.backgroundImage = `url('${h || hero.style.backgroundImage}')`;
+    });
+  </script></body>
+</html>
