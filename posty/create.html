@@ -1,0 +1,726 @@
+<!doctype html>
+
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NyanHappi12 — Dodaj / Edytuj post (2026)</title>  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet"><link rel="icon" type="image/png" href="https://nyanhappi12.github.io/site_files/NyanHappi12_icon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">  <style>
+    :root{
+  --bg:#616263;
+  --text:#ffffff;
+  --card:rgba(30,35,45,0.88);
+  --muted:#9aa4b2;
+
+  --glass:rgba(255,255,255,0.06);
+  --accent-1:#ff6fb5;
+  --accent-2:#7c4dff;
+}
+
+[data-theme="light"]{
+  --bg:#f6f9fc;
+  --text:#0b1220;
+  --card:#ffffff;
+  --muted:#55606a;
+
+  --glass:rgba(0,0,0,0.05);
+}
+
+    html,body{height:100%}
+    body{
+      margin:0;font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background: linear-gradient(180deg,#0b1220 0%, #071025 100%); color:#fff;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    [data-theme="light"] body{
+      background: linear-gradient(180deg,#f8fafc 0%, #ffffff 100%);
+      color:#0b1220;
+    }
+
+    .topbar{
+      position:fixed; left:20px; right:20px; top:16px; z-index:40;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit}
+    .brand img{width:56px;height:56px;border-radius:999px;object-fit:cover;border:2px solid rgba(255,255,255,0.06)}
+    .brand .title{font-weight:700;font-size:20px;letter-spacing:.4px}
+    .brand .title .logo-small{font-family:"Luckiest Guy"; font-size:22px; display:inline-block; margin-left:4px}
+
+    .menu-btn{
+      width:48px;height:48px;display:grid;place-items:center;border-radius:999px;
+      background:rgba(255,255,255,0.08);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.08);
+      cursor:pointer;color:#fff;transition:transform .15s ease,color .25s,background .25s;
+    }
+    [data-theme="light"] .menu-btn{ color:#0b1220; background:rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.08) }
+    .menu-btn:hover{ transform:scale(1.05) }
+
+    .drawer-wrap{position:fixed;inset:0;z-index:60;pointer-events:none}
+    .drawer-backdrop{position:absolute;inset:0;background:rgba(2,6,23,0.45);opacity:0;transition:opacity 420ms ease;pointer-events:none}
+    .drawer{position:fixed;left:0;top:0;height:100%;width:360px;max-width:85%;padding:22px;
+      transform:translateX(-110%);transition:transform 420ms cubic-bezier(.2,.9,.2,1),opacity 300ms ease;
+      backdrop-filter: blur(8px);border-right:1px solid rgba(255,255,255,0.04);
+      background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));pointer-events:auto;color:inherit;
+    }
+    [data-theme="light"] .drawer{ background: linear-gradient(180deg, rgba(10,20,30,0.03), rgba(255,255,255,0.95)); }
+    .drawer-wrap.open .drawer{ transform:translateX(0); opacity:1; }
+    .drawer-wrap.open .drawer-backdrop{ opacity:1; pointer-events:auto }
+    .drawer nav a{
+      display:flex;gap:10px;align-items:center;padding:10px;border-radius:8px;color:inherit;text-decoration:none;margin-bottom:6px
+    }
+    .drawer nav a:hover{background:rgba(255,255,255,0.03)}
+    .drawer nav a{display:flex;align-items:center;gap:12px}
+
+    .hero{
+      min-height:36vh;display:flex;align-items:center;justify-content:center;
+      padding:92px 20px 40px 20px;background-size:cover;background-position:center
+    }
+    .hero .card{
+      max-width:980px;width:100%;padding:26px;border-radius:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      text-align:center;backdrop-filter: blur(6px)
+    }
+    [data-theme="light"] .hero .card{ background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9)); }
+    .hero h1{font-family:"Luckiest Guy";font-size:40px;margin:0 0 8px;letter-spacing:1px}
+    .hero p{margin:0;opacity:.95;font-size:16px}
+
+    .content{
+  max-width:1100px;
+  margin:-36px auto 80px;
+  background: var(--card);
+  border-radius:20px;
+  padding:28px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  color: var(--text);
+}
+    [data-theme="light"] .content{ border:1px solid rgba(0,0,0,0.08); }
+
+    .panel{
+      border-radius:16px;padding:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.05)
+    }
+
+    .field{
+      width:100%; box-sizing:border-box;
+      padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.03); color:inherit; outline:none; font:inherit; transition:border-color .2s ease, background .2s ease;
+    }
+    .field:focus{ border-color: rgba(124,77,255,.7); background:rgba(255,255,255,0.06); }
+    .textarea{min-height:180px; resize:vertical}
+    .hint{font-size:13px;color:var(--muted);margin-top:6px}
+    .row{display:grid;gap:12px;margin-top:14px}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:820px){ .two-col{grid-template-columns:1fr} }
+
+    .cta{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:12px 18px;border-radius:999px;font-weight:600;text-decoration:none;
+      border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit;cursor:pointer;
+      transition:all .22s ease
+    }
+    .cta.gradient{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:white;border:0}
+    .cta:disabled{opacity:.55;cursor:not-allowed}
+
+    .countdown{
+      position:fixed; right:18px; bottom:18px; z-index:60; width:220px; border-radius:14px; padding:12px;
+      background:rgba(255,255,255,0.07); backdrop-filter: blur(6px); border:1px solid rgba(255,255,255,0.06); text-align:center
+    }
+    [data-theme="light"] .countdown{ background:rgba(0,0,0,0.04) }
+    .countdown .time{font-family:monospace;font-size:20px;margin-top:6px;transition:all .28s ease}
+
+    footer{text-align:center;color:var(--muted);padding:30px 12px;font-size:13px}
+    .material-symbols-rounded{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;font-size:22px;line-height:1}
+
+    .toast{
+      position:fixed; left:50%; top:22%; transform:translateX(-50%); z-index:90;
+      background:linear-gradient(90deg, rgba(0,0,0,0.8), rgba(10,10,20,0.95));
+      color:#fff; padding:12px 16px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.6);
+      opacity:0; pointer-events:none; transition:opacity .2s;
+    }
+    .toast.show{ opacity:1; pointer-events:auto }
+
+    .preview-box{
+      margin-top:10px; border-radius:14px; overflow:hidden; border:1px solid rgba(255,255,255,0.06);
+      background:rgba(0,0,0,0.08);
+    }
+    .preview-box img{width:100%; display:block; max-height:280px; object-fit:cover}
+    .switch-row{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:8px}
+
+    @media (max-width:900px){ .brand .title{display:none} }
+  </style></head>
+<body data-theme="dark">
+  <header class="topbar">
+    <a id="home-link" class="brand" href="/" title="NyanHappi12 — Strona główna">
+      <img id="logo-img" src="https://nyanhappi12.github.io/site_files/Copilot_20251213_004258.png" alt="logo">
+      <div>
+        <div class="title">NyanHappi12 <span class="logo-small">☆</span></div>
+        <div style="font-size:11px; color:var(--muted); margin-top:4px">Dodaj / Edytuj post</div>
+      </div>
+    </a>
+    <div style="display:flex; gap:10px; align-items:center">
+      <button id="menu-open" class="menu-btn" aria-label="Otwórz menu" title="Menu">
+        <svg width="18" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </header>  <div id="drawerWrap" class="drawer-wrap" aria-hidden="true">
+    <div id="drawerBackdrop" class="drawer-backdrop"></div>
+    <aside class="drawer" role="dialog" aria-modal="true" aria-label="Nawigacja">
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px">
+        <img id="drawer-logo" src="https://nyanhappi12.github.io/site_files/Copilot_20251213_004258.png" style="width:56px;height:56px;border-radius:999px;object-fit:cover">
+        <div>
+          <div style="font-weight:700">NyanHappi12</div>
+          <div style="font-size:12px;color:var(--muted)">Witaj! wybierz stronę</div>
+        </div>
+      </div>
+      <nav>
+        <a href="/filmy/"><span class="material-symbols-rounded">smart_display</span>Najnowsze Filmy</a>
+        <a href="/galeria/"><span class="material-symbols-rounded">photo_library</span>Galeria Obrazów</a>
+        <a href="/wydarzenia/"><span class="material-symbols-rounded">schedule</span>Odliczanie Do Wydarzeń</a>
+        <a href="/posty/"><span class="material-symbols-rounded">article</span>Posty</a>
+        <a id="account-link" href="/login/"><span class="material-symbols-rounded">account_circle</span>Konto</a>
+        <a href="/informacje-kontaktowe/"><span class="material-symbols-rounded">contact_mail</span>Informacje & Kontakt</a>
+      </nav>
+      <div style="margin-top:18px; font-size:13px; color:var(--muted)">Motyw:</div>
+      <div style="display:flex; gap:8px; margin-top:8px">
+        <button id="theme-light" class="cta" style="padding:8px 10px">Jasny</button>
+        <button id="theme-dark" class="cta gradient" style="padding:8px 10px">Ciemny</button>
+      </div>
+      <div style="margin-top:14px; font-size:12px; color:var(--muted)">Motyw zapisany lokalnie; jeśli jesteś zalogowany, zostanie zapisany do Firestore.</div>
+    </aside>
+  </div>  <main>
+    <section id="hero" class="hero" style="background-image:url('https://nyanhappi12.github.io/site_files/Copilot_20251213_004258.png?text=Posty')">
+      <div class="card">
+        <h1 id="pageTitle">Dodaj post</h1>
+        <p id="pageSubtitle">Wstaw obrazek, tytuł, opis i ustaw komentarze.</p>
+      </div>
+    </section><section class="content">
+  <div class="panel">
+    <div class="row">
+      <div>
+        <label class="hint" for="postTitle">Tytuł</label>
+        <input id="postTitle" class="field" type="text" placeholder="Np. Mój nowy post">
+      </div>
+
+      <div>
+        <label class="hint" for="postContent">Opis</label>
+        <textarea id="postContent" class="field textarea" placeholder="Napisz treść posta..."></textarea>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <label class="hint" for="imageUrl">Obrazek posta — URL</label>
+          <input id="imageUrl" class="field" type="text" placeholder="https://...">
+          <div class="hint">Możesz wkleić URL albo użyć uploadu poniżej.</div>
+        </div>
+        <div>
+          <label class="hint" for="imageFile">Obrazek posta — plik</label>
+          <input id="imageFile" class="field" type="file" accept="image/*">
+          <div class="hint">Plik zostanie wysłany do serwera i zapisany jako obraz posta.</div>
+        </div>
+      </div>
+
+      <div class="preview-box" id="previewBox" style="display:none">
+        <img id="imagePreview" alt="Podgląd obrazu" src="">
+      </div>
+
+      <div class="switch-row">
+        <label class="hint" style="display:flex; align-items:center; gap:8px; margin:0">
+          <input id="commentsEnabled" type="checkbox" checked>
+          Komentarze włączone
+        </label>
+        <label class="hint" style="display:flex; align-items:center; gap:8px; margin:0">
+          <input id="draftMode" type="checkbox">
+          Zapisz jako szkic
+        </label>
+      </div>
+
+      <div class="switch-row" style="margin-top:14px">
+        <button id="saveBtn" class="cta gradient">
+          <span class="material-symbols-rounded">save</span>
+          Zapisz post
+        </button>
+        <a href="/posty/" class="cta">Wróć do postów</a>
+      </div>
+
+      <div id="statusMsg" class="hint" style="margin-top:8px">Ładowanie sesji...</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 NyanHappi12 — wszelkie prawa zastrzeżone.</div>
+  <div style="margin-top:6px;font-size:12px">Motyw: <span id="footer-theme">ciemny</span></div>
+</footer>
+
+  </main>  <div id="countdown" class="countdown" role="status" aria-live="polite">
+    <div style="font-size:12px;font-weight:600">Do następnego odcinka zostało:</div>
+    <div id="countdown-value" class="time">Wczytywanie...</div>
+  </div>  <div id="toast" class="toast" role="alert" aria-live="assertive"></div>  <script type="module">
+    const CONFIG = {
+      CLOUDINARY: {
+        cloudName: 'dmogrkbja',
+        unsignedPreset: 'NyanHappi'
+      },
+      FIREBASE: {
+        apiKey: "AIzaSyA6B1a0I1m7hXPwblW8diKsW1nnDVmGEP0",
+        authDomain: "nyanhappi12.firebaseapp.com",
+        projectId: "nyanhappi12",
+        storageBucket: "nyanhappi12.firebasestorage.app",
+        messagingSenderId: "197042141276",
+        appId: "1:197042141276:web:d9f1c73f569f9180a40e99",
+        measurementId: "G-RW1PDZR1X5"
+      }
+    };
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    const app = initializeApp(CONFIG.FIREBASE);
+    try { getAnalytics(app); } catch (e) {}
+
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    const drawerWrap = document.getElementById('drawerWrap');
+    const menuOpen = document.getElementById('menu-open');
+    const drawerClose = document.getElementById('drawerClose');
+    const drawerBackdrop = document.getElementById('drawerBackdrop');
+    const accountLink = document.getElementById('account-link');
+    const footerTheme = document.getElementById('footer-theme');
+    const themeLightBtn = document.getElementById('theme-light');
+    const themeDarkBtn = document.getElementById('theme-dark');
+    const countdownValue = document.getElementById('countdown-value');
+    const toast = document.getElementById('toast');
+    const statusMsg = document.getElementById('statusMsg');
+    const saveBtn = document.getElementById('saveBtn');
+    const pageTitle = document.getElementById('pageTitle');
+    const pageSubtitle = document.getElementById('pageSubtitle');
+    const postTitle = document.getElementById('postTitle');
+    const postContent = document.getElementById('postContent');
+    const imageUrl = document.getElementById('imageUrl');
+    const imageFile = document.getElementById('imageFile');
+    const commentsEnabled = document.getElementById('commentsEnabled');
+    const draftMode = document.getElementById('draftMode');
+    const previewBox = document.getElementById('previewBox');
+    const imagePreview = document.getElementById('imagePreview');
+    const homeLink = document.getElementById('home-link');
+    const logoImg = document.getElementById('logo-img');
+    const drawerLogo = document.getElementById('drawer-logo');
+    const hero = document.getElementById('hero');
+
+    const THEME_KEY = 'nh_theme';
+    const SESSION_KEY = 'nh_session_id';
+    const defaultLogo = 'https://nyanhappi12.github.io/site_files/Copilot_20251213_004258.png';
+    const defaultHero = 'https://nyanhappi12.github.io/site_files/Copilot_20251213_004258.png?text=Posty';
+
+    let sessionAccountDoc = null;
+let editingPostId = null;
+let currentImageUrl = '';
+
+    function toastMsg(msg) {
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function safeText(v, fallback = '—') {
+      const s = String(v ?? '').trim();
+      return s ? s : fallback;
+    }
+
+    function getUrlSessionId() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('sessionid') || params.get('session_id') || (() => {
+        try { return localStorage.getItem(SESSION_KEY); } catch (e) { return null; }
+      })();
+    }
+
+    function getPostIdFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('id') || params.get('postid');
+    }
+
+    function setSessionId(id) {
+      if (!id) return;
+      const u = new URL(window.location.href);
+      u.searchParams.set('sessionid', id);
+      u.searchParams.set('session_id', id);
+      window.history.replaceState({}, '', u.toString());
+      try { localStorage.setItem(SESSION_KEY, id); } catch (e) {}
+    }
+
+    function clearSessionId() {
+      const u = new URL(window.location.href);
+      u.searchParams.delete('sessionid');
+      u.searchParams.delete('session_id');
+      window.history.replaceState({}, '', u.toString());
+      try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+    }
+
+    function applyTheme(theme, persistToFirestore = true) {
+      const t = theme === 'light' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+      document.body.setAttribute('data-theme', t);
+      if (footerTheme) footerTheme.textContent = t === 'light' ? 'jasny' : 'ciemny';
+      try { localStorage.setItem(THEME_KEY, t); } catch (e) {}
+      if (persistToFirestore && sessionAccountDoc && sessionAccountDoc.id) {
+        setDoc(doc(db, 'accounts', sessionAccountDoc.id), { theme: t }, { merge: true }).catch(() => {});
+      }
+    }
+
+    const EPISODE_ANCHOR = new Date('2026-06-01T21:00:00+02:00').getTime();
+const STEP = 72 * 60 * 60 * 1000; // 72h
+
+function getNextEpisodeTime() {
+  const now = Date.now();
+  const next = EPISODE_ANCHOR + Math.ceil((now - EPISODE_ANCHOR) / STEP) * STEP;
+  return new Date(next);
+}
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function updateCountdown() {
+  const el = document.getElementById('countdown-value');
+  if (!el) return;
+
+  const now = new Date();
+  const target = getNextEpisodeTime();
+
+  const diff = Math.max(0, target - now);
+  const s = Math.floor(diff / 1000) % 60;
+  const m = Math.floor(diff / 60000) % 60;
+  const h = Math.floor(diff / 3600000) % 24;
+  const d = Math.floor(diff / (24 * 3600000));
+
+  const out = (d ? (d + 'd ') : '') + `${pad(h)}:${pad(m)}:${pad(s)}`;
+
+  el.style.transform = 'translateY(-6px) scale(0.99)';
+  el.style.opacity = '0.85';
+  setTimeout(() => {
+    el.textContent = out;
+    el.style.transform = 'translateY(0) scale(1)';
+    el.style.opacity = '1';
+  }, 120);
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+    function removeGlobalDrawerListeners() {
+      document.removeEventListener('pointerdown', outsideDrawerHandler);
+      document.removeEventListener('touchstart', outsideDrawerHandler);
+      document.removeEventListener('keydown', escCloseHandler);
+    }
+
+    function closeDrawer() {
+      if (!drawerWrap) return;
+      drawerWrap.classList.remove('open');
+      const drawerEl = drawerWrap.querySelector('.drawer');
+      let cleaned = false;
+      function cleanUpAfterClose() {
+        if (cleaned) return;
+        cleaned = true;
+        drawerWrap.setAttribute('aria-hidden', 'true');
+        removeGlobalDrawerListeners();
+        if (drawerEl) drawerEl.removeEventListener('transitionend', onTransitionEnd);
+      }
+      function onTransitionEnd(e) { if (e.target === drawerEl) cleanUpAfterClose(); }
+      if (drawerEl) drawerEl.addEventListener('transitionend', onTransitionEnd);
+      setTimeout(cleanUpAfterClose, 700);
+    }
+
+    function openDrawer() {
+      if (!drawerWrap) return;
+      drawerWrap.classList.add('open');
+      drawerWrap.setAttribute('aria-hidden', 'false');
+      setTimeout(() => {
+        document.addEventListener('pointerdown', outsideDrawerHandler);
+        document.addEventListener('touchstart', outsideDrawerHandler, { passive: true });
+        document.addEventListener('keydown', escCloseHandler);
+      }, 0);
+    }
+
+    function escCloseHandler(e) {
+      if (e.key === 'Escape' || e.key === 'Esc') closeDrawer();
+    }
+
+    function outsideDrawerHandler(e) {
+      if (!drawerWrap || !drawerWrap.classList.contains('open')) return;
+      const drawerEl = drawerWrap.querySelector('.drawer');
+      const path = e.composedPath ? e.composedPath() : (e.path || []);
+      const target = path && path.length ? path[0] : e.target;
+      if (drawerEl && drawerEl.contains(target)) return;
+      if (menuOpen && menuOpen.contains(target)) return;
+      closeDrawer();
+    }
+
+    async function loadAccountById(uid) {
+      if (!uid) return null;
+      const ref = doc(db, 'accounts', uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return null;
+      return { id: snap.id, ...snap.data() };
+    }
+
+    async function ensureAccountDocForUser(user) {
+      const ref = doc(db, 'accounts', user.uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        const nickFromEmail = user.email ? user.email.split('@')[0] : null;
+        const created = {
+          display_name: user.displayName || nickFromEmail || 'Użytkownik',
+          email: user.email || null,
+          createdAt: new Date().toISOString()
+        };
+        await setDoc(ref, created);
+        return { id: user.uid, ...created };
+      }
+      return { id: snap.id, ...snap.data() };
+    }
+
+    function updateAccountLink() {
+      if (!accountLink) return;
+      if (sessionAccountDoc?.id) {
+        accountLink.innerHTML = `<span class="material-symbols-rounded">account_circle</span>${safeText(sessionAccountDoc.display_name || sessionAccountDoc.email?.split('@')[0] || 'Konto')}`;
+        accountLink.href = `/konto/?sessionid=${encodeURIComponent(sessionAccountDoc.id)}&profileid=${encodeURIComponent(sessionAccountDoc.id)}`;
+      } else {
+        accountLink.innerHTML = `<span class="material-symbols-rounded">account_circle</span>Konto`;
+        accountLink.href = '/login/';
+      }
+    }
+
+    async function uploadToCloudinary(file) {
+  const url = `https://api.cloudinary.com/v1_1/${CONFIG.CLOUDINARY.cloudName}/image/upload`;
+
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CONFIG.CLOUDINARY.unsignedPreset);
+
+  // 🔥 WAŻNE: wymusza folder
+  fd.append('folder', 'Pictures');
+
+  const resp = await fetch(url, {
+    method: 'POST',
+    body: fd
+  });
+
+  const data = await resp.json();
+
+  alert('📦 FULL RESPONSE:\n' + JSON.stringify(data, null, 2));
+
+  if (data.error) {
+    alert('❌ CLOUDINARY ERROR:\n' + data.error.message);
+    throw new Error(data.error.message);
+  }
+
+  if (!data.secure_url) {
+    alert('❌ BRAK secure_url (upload nie przeszedł)');
+    throw new Error('No secure_url');
+  }
+
+  return data;
+}
+    async function loadPostForEdit(postId) {
+      const ref = doc(db, 'user_posts', postId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return null;
+      return { id: snap.id, ...snap.data() };
+    }
+
+    function setPreview(url) {
+  currentImageUrl = url || '';
+  if (!url) {
+    previewBox.style.display = 'none';
+    imagePreview.src = '';
+    return;
+  }
+  previewBox.style.display = 'block';
+  imagePreview.src = url;
+  imagePreview.onerror = () => { imagePreview.src = 'https://via.placeholder.com/640x360?text=No+image'; };
+}
+
+    function fillFormFromPost(post) {
+      if (!post) return;
+      postTitle.value = post.title || post.name || '';
+      postContent.value = post.content || post.body || post.text || '';
+      imageUrl.value = post.imageURL || post.imageUrl || post.image_url || post.coverURL || post.thumb || '';
+      commentsEnabled.checked = post.comments_enabled !== false;
+      draftMode.checked = !!post.draft;
+      setPreview(imageUrl.value.trim());
+      pageTitle.textContent = 'Edytuj post';
+      pageSubtitle.textContent = 'Zmień treść, obraz i ustawienia komentarzy.';
+      document.title = 'NyanHappi12 — Edytuj post';
+    }
+
+    function getNext21Local() {
+      const now = new Date();
+      const target = new Date(now);
+      target.setHours(21, 0, 0, 0);
+      if (target <= now) target.setDate(target.getDate() + 1);
+      return target;
+    }
+
+    async function initSession() {
+      const sid = getUrlSessionId();
+      if (sid) sessionAccountDoc = await loadAccountById(sid);
+      if (!sessionAccountDoc) {
+        try {
+          const saved = localStorage.getItem(SESSION_KEY);
+          if (saved) sessionAccountDoc = await loadAccountById(saved);
+        } catch (e) {}
+      }
+      updateAccountLink();
+    }
+
+    function canEditPost(post) {
+      if (!sessionAccountDoc?.id || !post) return false;
+      const ownerUid = post.owner_uid || post.OwnerUID || post.author_uid || post.uid || '';
+      return ownerUid === sessionAccountDoc.id;
+    }
+
+    async function savePost() {
+      if (!sessionAccountDoc?.id) {
+        toastMsg('Najpierw zaloguj się.');
+        window.location.href = '/login/';
+        return;
+      }
+
+      const title = String(postTitle.value || '').trim();
+      const content = String(postContent.value || '').trim();
+      const imgUrl = String(imageUrl.value || currentImageUrl || '').trim();
+      const comments_enabled = !!commentsEnabled.checked;
+      const draft = !!draftMode.checked;
+
+      if (!title) return toastMsg('Dodaj tytuł.');
+      if (!content) return toastMsg('Dodaj opis.');
+
+      try {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="material-symbols-rounded">hourglass_top</span> Zapisywanie...';
+
+        const payload = {
+          title,
+          content,
+          imageURL: imgUrl || null,
+          owner_uid: sessionAccountDoc.id,
+          display_name: sessionAccountDoc.display_name || sessionAccountDoc.email?.split('@')[0] || 'Konto',
+          comments_enabled,
+          draft,
+          updatedAt: new Date().toISOString()
+        };
+
+        let postId = editingPostId;
+
+        if (editingPostId) {
+          await setDoc(doc(db, 'user_posts', editingPostId), payload, { merge: true });
+        } else {
+          payload.createdAt = new Date().toISOString();
+          payload.likes = 0;
+          payload.comments_count = 0;
+          payload.comments = [];
+          payload.liked_by = [];
+          const ref = await addDoc(collection(db, 'user_posts'), payload);
+          postId = ref.id;
+        }
+
+        toastMsg('Zapisano post.');
+        const redirectUrl = `/posty/post/?id=${encodeURIComponent(postId)}&sessionid=${encodeURIComponent(sessionAccountDoc.id)}&profileid=${encodeURIComponent(sessionAccountDoc.id)}`;
+        setTimeout(() => { window.location.href = redirectUrl; }, 700);
+      } catch (e) {
+        console.error(e);
+        toastMsg('Nie udało się zapisać posta.');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<span class="material-symbols-rounded">save</span> Zapisz post';
+      }
+    }
+
+    menuOpen?.addEventListener('click', (ev) => { ev.stopPropagation(); openDrawer(); });
+    drawerClose?.addEventListener('click', (ev) => { ev.stopPropagation(); closeDrawer(); });
+    drawerBackdrop?.addEventListener('click', (ev) => { ev.stopPropagation(); closeDrawer(); });
+
+    if (themeLightBtn) themeLightBtn.onclick = () => applyTheme('light');
+    if (themeDarkBtn) themeDarkBtn.onclick = () => applyTheme('dark');
+    applyTheme(localStorage.getItem(THEME_KEY) || 'dark', false);
+    
+
+    imageUrl.addEventListener('input', () => setPreview(imageUrl.value.trim()));
+
+    imageFile.addEventListener('change', async () => {
+  const file = imageFile.files && imageFile.files[0];
+  if (!file) return;
+
+  try {
+    toastMsg('Wysyłanie obrazu...');
+
+    const result = await uploadToCloudinary(file);
+    const url = result.secure_url;
+
+    alert('🎉 FINAL URL:\n' + url);
+
+    imageUrl.value = url;
+    currentImageUrl = url;
+    setPreview(url);
+
+    toastMsg('Obraz przesłany ✅');
+  } catch (e) {
+    alert('❌ ERROR:\n' + e.message);
+    toastMsg(e.message || 'Upload failed ❌');
+  }
+});
+
+saveBtn.addEventListener('click', async (e) => {
+  e.preventDefault();
+  await savePost();
+});
+    function lockForm() {
+      const locked = !sessionAccountDoc?.id;
+      statusMsg.textContent = locked ? 'Najpierw zaloguj się, aby dodać lub edytować post.' : 'Możesz tworzyć nowy post.';
+      saveBtn.disabled = locked;
+      [postTitle, postContent, imageUrl, imageFile, commentsEnabled, draftMode].forEach(el => { if (el) el.disabled = locked; });
+    }
+
+    async function initPage() {
+      if (logoImg) logoImg.src = defaultLogo;
+      if (drawerLogo) drawerLogo.src = defaultLogo;
+      if (hero) hero.style.backgroundImage = `url('${defaultHero}')`;
+
+      await initSession();
+      lockForm();
+
+      editingPostId = getPostIdFromUrl();
+      if (editingPostId) {
+        const post = await loadPostForEdit(editingPostId);
+        if (!post) {
+          toastMsg('Nie znaleziono posta do edycji.');
+          pageTitle.textContent = 'Dodaj post';
+          pageSubtitle.textContent = 'Tworzenie nowego posta.';
+          editingPostId = null;
+          return;
+        }
+
+        if (!canEditPost(post)) {
+          toastMsg('Nie masz uprawnień do edycji tego posta.');
+          statusMsg.textContent = 'Nie możesz edytować cudzego posta.';
+          saveBtn.disabled = true;
+          return;
+        }
+
+        fillFormFromPost(post);
+        statusMsg.textContent = 'Edytujesz istniejący post.';
+      } else {
+        pageTitle.textContent = 'Dodaj post';
+        pageSubtitle.textContent = 'Wstaw obrazek, tytuł, opis i ustaw komentarze.';
+        statusMsg.textContent = sessionAccountDoc?.id ? 'Tworzysz nowy post.' : 'Najpierw zaloguj się, aby dodać post.';
+      }
+    }
+
+    initPage();
+  </script></body>
+</html>
